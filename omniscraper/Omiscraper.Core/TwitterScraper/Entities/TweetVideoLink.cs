@@ -7,7 +7,7 @@ using LinqToTwitter;
 
 namespace Omniscraper.Core.TwitterScraper.Entities
 {
-    public record TweetVideoInfo
+    public record TweetVideoLink
     {
         public int BitRate { get; init; }
         public string Url { get; init; }        
