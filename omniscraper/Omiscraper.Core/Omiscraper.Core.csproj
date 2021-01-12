@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Omniscraper.Core</RootNamespace>
+    <AssemblyName>Omniscraper.Core</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
