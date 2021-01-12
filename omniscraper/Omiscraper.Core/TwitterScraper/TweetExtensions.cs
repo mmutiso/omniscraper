@@ -10,9 +10,19 @@ namespace Omniscraper.Core.TwitterScraper
 {
     public static class TweetExtensions
     {
-        public static List<TweetVideoInfo> GetVideoLinks(this List<Variant> variants)
+        public static List<TweetVideoLink> GetVideoLinks(this List<Variant> variants)
         {
-            return default;
+            var links = new List<TweetVideoLink>(variants.Count);
+            variants.ForEach(variant =>
+            {
+                var link = new TweetVideoLink
+                {
+                    BitRate = variant.BitRate,
+                    Url = variant.Url
+                };
+                links.Add(link);
+            });
+            return links;
         }
     }
 }

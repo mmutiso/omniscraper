@@ -5,6 +5,7 @@ using LinqToTwitter;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Omniscraper.Sample
 {
@@ -28,6 +29,13 @@ namespace Omniscraper.Sample
             Task task = twitterStream.StartAsync((content) => Task.Factory.StartNew(() =>
              {
                  Console.WriteLine(content.Content);
+
+                 if (content.Content.Length > 2 && !content.Content.Equals("\r\n"))
+                 {
+                     Status tweet = JsonConvert.DeserializeObject<Status>(content.Content);
+                     Console.WriteLine(tweet.Text);
+                 }
+
              })); // register the stream handler
             Console.WriteLine("Passed stream handler registration");
             await task;// start the stream                         

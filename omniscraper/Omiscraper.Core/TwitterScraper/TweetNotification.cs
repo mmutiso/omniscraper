@@ -42,9 +42,9 @@ namespace Omiscraper.Core.TwitterScraper
             return false;
         }
 
-        public List<TweetVideoInfo> GetVideoLinks()
+        public List<TweetVideoLink> GetVideoLinks()
         {
-            List<TweetVideoInfo> videoLinks = new List<TweetVideoInfo>(0);
+            List<TweetVideoLink> videoLinks = new List<TweetVideoLink>(0);
             if (tweet != null)
             {
                 var extendedEntities = tweet.ExtendedEntities;
