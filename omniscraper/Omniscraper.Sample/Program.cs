@@ -30,7 +30,7 @@ namespace Omniscraper.Sample
              {
                  Console.WriteLine(content.Content);
 
-                 if (content.Content.Length > 2 && !content.Content.Equals("\r\n"))
+                 if (content.Content.Length > 2)
                  {
                      Status tweet = JsonConvert.DeserializeObject<Status>(content.Content);
                      Console.WriteLine(tweet.Text);

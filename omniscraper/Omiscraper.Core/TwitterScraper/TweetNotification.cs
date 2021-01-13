@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LinqToTwitter;
 using Omniscraper.Core.TwitterScraper;
 using Omniscraper.Core.TwitterScraper.Entities;
 
@@ -11,8 +10,8 @@ namespace Omiscraper.Core.TwitterScraper
 {
     public class TweetNotification
     {
-        Status tweet;
-        public TweetNotification(Status tweetNotification)
+        RawTweet tweet;
+        public TweetNotification(RawTweet tweetNotification)
         {
             tweet = tweetNotification;
         }
