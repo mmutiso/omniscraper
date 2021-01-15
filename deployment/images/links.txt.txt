@@ -1,0 +1,2 @@
+https://azure.microsoft.com/en-in/pricing/details/cache/
+https://aws.amazon.com/elasticache/pricing/

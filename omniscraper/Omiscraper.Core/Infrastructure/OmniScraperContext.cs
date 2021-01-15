@@ -29,7 +29,18 @@ namespace Omniscraper.Core.Infrastructure
                          select strm;
 
             return stream;
-        }     
+        }
+
+        public async Task<Status> GetStatusByIdAsync(long tweetId)
+        {
+            var tweetQuery = from tweet in context.Status
+                             .Where(tweet => tweet.Type == StatusType.Show)
+                             .Where(tweet => tweet.ID == (ulong)tweetId)
+                             .Where(tweet => tweet.TweetMode == TweetMode.Extended)
+                             select tweet;
+
+            return await tweetQuery.FirstOrDefaultAsync();
+        }
 
         IAuthorizer ApplicationAuthorizer(TwitterKeys keys)
         {

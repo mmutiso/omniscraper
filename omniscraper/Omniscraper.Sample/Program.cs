@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Omniscraper.Core.TwitterScraper.Entities;
+using Omniscraper.Core.TwitterScraper;
 
 namespace Omniscraper.Sample
 {
@@ -17,6 +19,7 @@ namespace Omniscraper.Sample
             TwitterKeys keys = credentialsLoader.Load();
 
             OmniScraperContext context = new OmniScraperContext(keys);
+            ITwitterRepository twitterRepository = new LinqToTwitterRepository(context);
 
             List<string> keywords = new List<string>
             {
@@ -26,14 +29,35 @@ namespace Omniscraper.Sample
 
             IQueryable<Streaming> twitterStream = context.CreateStream(keywords, tokenSource.Token);
             Console.WriteLine("Passed stream creation");            
-            Task task = twitterStream.StartAsync((content) => Task.Factory.StartNew(() =>
+            Task task = twitterStream.StartAsync((content) => Task.Factory.StartNew(() => 
              {
                  Console.WriteLine(content.Content);
 
                  if (content.Content.Length > 2)
                  {
-                     Status tweet = JsonConvert.DeserializeObject<Status>(content.Content);
-                     Console.WriteLine(tweet.Text);
+                     Console.WriteLine();
+                     RawTweet tweet = JsonConvert.DeserializeObject<RawTweet>(content.Content);
+                     long? replyingToId = tweet.in_reply_to_status_id;
+                     if (replyingToId.HasValue)
+                     {
+                         TweetNotification replyingTo = twitterRepository
+                                                        .FindByIdAsync(replyingToId.Value)
+                                                        .GetAwaiter()
+                                                        .GetResult();
+
+                         if (replyingTo.HasVideo())
+                         {
+                             var videoLinks = replyingTo.GetVideoLinks();
+                             videoLinks.ForEach(vl =>
+                             {
+                                 Console.WriteLine(vl.Url);
+                             });
+                         }
+                         else
+                         {
+                             Console.WriteLine("No video here");
+                         }
+                     }  
                  }
 
              })); // register the stream handler

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Omniscraper.Core.TwitterScraper;
 using Omniscraper.Core.TwitterScraper.Entities;
 
-namespace Omiscraper.Core.TwitterScraper
+namespace Omniscraper.Core.TwitterScraper
 {
     public class TweetNotification
     {
