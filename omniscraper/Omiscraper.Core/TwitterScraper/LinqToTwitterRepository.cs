@@ -17,16 +17,17 @@ namespace Omniscraper.Core.TwitterScraper
             context = scraperContext;
         }
 
-        public async Task<TweetNotification> FindByIdAsync(long id)
+        public async Task<RawTweet> FindByIdAsync(long id)
         {
             var tweet = await context.GetStatusByIdAsync(id);
             string tweetStr = JsonConvert.SerializeObject(tweet);
-            Console.WriteLine("-----------------------------");
-            Console.WriteLine(tweetStr);
-            Console.WriteLine("-----------------------------");
             var rawTweet = JsonConvert.DeserializeObject<RawTweet>(tweetStr);
-            var notification = new TweetNotification(rawTweet);
-            return notification;
+            return rawTweet;
+        }
+
+        public Task ReplyToTweetAsync(long idOftweetToReplyTo, string content)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Omniscraper.Core.TwitterScraper;
+using Omniscraper.Core.TwitterScraper.Entities;
 
 namespace Omniscraper.Core.TwitterScraper
 {
     public interface ITwitterRepository
     {
-        public Task<TweetNotification> FindByIdAsync(long id);
-    }
+        public Task<RawTweet> FindByIdAsync(long id);
+        public Task ReplyToTweetAsync(long idOftweetToReplyTo, string content);
+     }
 }
