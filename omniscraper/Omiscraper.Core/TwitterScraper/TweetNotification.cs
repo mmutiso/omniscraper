@@ -5,22 +5,39 @@ using System.Text;
 using System.Threading.Tasks;
 using Omniscraper.Core.TwitterScraper;
 using Omniscraper.Core.TwitterScraper.Entities;
+using Omniscraper.Core.Storage;
 
 namespace Omniscraper.Core.TwitterScraper
 {
     public class TweetNotification
     {
-        RawTweet tweet;
-        public TweetNotification(RawTweet tweetNotification)
+        RawTweet Tweet;
+        long OriginalTweetId;
+        Guid Id;
+
+        public TweetNotification(RawTweet tweetNotification, long originalTweetId)
         {
-            tweet = tweetNotification;
+            Tweet = tweetNotification;
+            OriginalTweetId = originalTweetId;
+            Id = Guid.NewGuid();
         }
+
+        public TwitterVideo GetVideo()
+        {
+            if (HasVideo())
+            {
+                var video = new TwitterVideo(Id, GetVideoUrl(), Tweet.id, OriginalTweetId);
+                return video;
+            }
+            return null;
+        }
+        
 
         public bool HasVideo()
         {
-            if (tweet != null)
+            if (Tweet != null)
             {
-                var extendedEntities = tweet.ExtendedEntities;
+                var extendedEntities = Tweet.ExtendedEntities;
                 if (extendedEntities != null)
                 {
                     var mediaEntities = extendedEntities.MediaEntities;
@@ -41,12 +58,12 @@ namespace Omniscraper.Core.TwitterScraper
             return false;
         }
 
-        public List<TweetVideoLink> GetVideoLinks()
+        private List<TweetVideoLink> GetVideoLinks()
         {
             List<TweetVideoLink> videoLinks = new List<TweetVideoLink>(0);
-            if (tweet != null)
+            if (Tweet != null)
             {
-                var extendedEntities = tweet.ExtendedEntities;
+                var extendedEntities = Tweet.ExtendedEntities;
                 if (extendedEntities != null)
                 {
                     var mediaEntities = extendedEntities.MediaEntities;
@@ -80,6 +97,22 @@ namespace Omniscraper.Core.TwitterScraper
                 return TwitterContentType.Video;
             else
                 return TwitterContentType.Undefined;                
+        }
+
+        public string GetVideoUrl()
+        {
+            var videoLinks = GetVideoLinks();
+            int maxBitRate = -1;
+            string videoLink = string.Empty;
+            videoLinks.ForEach(link =>
+            {
+                if (link.BitRate > maxBitRate)
+                {
+                    videoLink = link.Url;
+                }
+            });
+
+            return videoLink;
         }
     }
 }

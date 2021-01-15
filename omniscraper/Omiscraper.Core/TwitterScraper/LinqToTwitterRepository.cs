@@ -21,6 +21,9 @@ namespace Omniscraper.Core.TwitterScraper
         {
             var tweet = await context.GetStatusByIdAsync(id);
             string tweetStr = JsonConvert.SerializeObject(tweet);
+            Console.WriteLine("-----------------------------");
+            Console.WriteLine(tweetStr);
+            Console.WriteLine("-----------------------------");
             var rawTweet = JsonConvert.DeserializeObject<RawTweet>(tweetStr);
             var notification = new TweetNotification(rawTweet);
             return notification;

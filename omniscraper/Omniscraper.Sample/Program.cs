@@ -47,11 +47,8 @@ namespace Omniscraper.Sample
 
                          if (replyingTo.HasVideo())
                          {
-                             var videoLinks = replyingTo.GetVideoLinks();
-                             videoLinks.ForEach(vl =>
-                             {
-                                 Console.WriteLine(vl.Url);
-                             });
+                             var videoLinks = replyingTo.GetVideoUrl();
+                             Console.WriteLine(videoLinks);
                          }
                          else
                          {
