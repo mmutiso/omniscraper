@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Omniscraper.Core.TwitterScraper.Entities;
 using Omniscraper.Core.TwitterScraper;
+using Omniscraper.Core;
 
 namespace Omniscraper.Sample
 {
@@ -36,25 +37,12 @@ namespace Omniscraper.Sample
                  if (content.Content.Length > 2)
                  {
                      Console.WriteLine();
-                     RawTweet tweet = JsonConvert.DeserializeObject<RawTweet>(content.Content);
-                     long? replyingToId = tweet.in_reply_to_status_id;
-                     if (replyingToId.HasValue)
-                     {
-                         TweetNotification replyingTo = twitterRepository
-                                                        .FindByIdAsync(replyingToId.Value)
-                                                        .GetAwaiter()
-                                                        .GetResult();
-
-                         if (replyingTo.HasVideo())
-                         {
-                             var videoLinks = replyingTo.GetVideoUrl();
-                             Console.WriteLine(videoLinks);
-                         }
-                         else
-                         {
-                             Console.WriteLine("No video here");
-                         }
-                     }  
+                     
+                     Console.WriteLine(content.Content);
+                 }
+                 else
+                 {
+                     Console.WriteLine("Received keep-alive message");
                  }
 
              })); // register the stream handler
