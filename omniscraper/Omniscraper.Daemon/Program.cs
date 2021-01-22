@@ -6,6 +6,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
+using Omniscraper.Core;
+using Omniscraper.Core.Infrastructure;
+using Omniscraper.Core.Storage;
+using Omniscraper.Core.TwitterScraper;
+
 namespace Omniscraper.Daemon
 {
     public class Program
@@ -41,10 +46,25 @@ namespace Omniscraper.Daemon
 
         static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
-            services.AddHostedService<TweetListeningBackgroundService>();
+            services.AddScoped<ILoadApplicationCredentials, EnvironmentVariablesKeysLoader>();
 
-            services.AddLogging();
-            
+            TwitterKeys keys = services.BuildServiceProvider()
+                    .GetRequiredService<ILoadApplicationCredentials>()
+                    .Load();
+
+            services.AddSingleton<TwitterKeys>(keys);
+            services.AddScoped<OmniScraperContext>();
+            services.AddScoped<ITwitterRepository, LinqToTwitterRepository>();
+            services.AddScoped<TweetProcessingService>();
+            services.Configure<TweetProcessorSettings>(context.Configuration.GetSection("TweetProcessorSettings"));
+            services.AddDbContext<OmniscraperDbContext>((options) =>
+            {
+                //options here.
+            });
+            services.AddScoped<IScraperRepository, ScraperRepository>();
+
+            services.AddHostedService<TweetListeningBackgroundService>();
+            services.AddLogging();    
         }
 
     }

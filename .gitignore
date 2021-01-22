@@ -5,6 +5,7 @@
 
 #launch settings include env variables
 omniscraper/Omniscraper.Sample/Properties/launchSettings.json
+omniscraper/Omniscraper.Daemon/Properties/launchSettings.json
 
 # User-specific files
 *.rsuser

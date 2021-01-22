@@ -28,7 +28,7 @@ namespace Omniscraper.Core
             settings = options.Value;
         }
 
-        public async Task ProcessTweet(string tweetJsonString)
+        public async Task ProcessTweetAsync(string tweetJsonString)
         {
             //deserialize tweet.
             RawTweet parentTweet = DeserializeTweet(tweetJsonString);
