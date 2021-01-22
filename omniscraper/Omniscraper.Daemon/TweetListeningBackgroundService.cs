@@ -36,11 +36,11 @@ namespace Omniscraper.Daemon
 
                 IQueryable<Streaming> twitterStream = omniContext.CreateStream(keywords, stoppingToken);
                 logger.LogInformation("Passed stream creation");
-                Task streamTask = twitterStream.StartAsync((content) => Task.Factory.StartNew(() =>
+                Task streamTask = twitterStream.StartAsync((content) => Task.Factory.StartNew(async () =>
                 {
                     if (content.Content.Length > 2)
                     {
-                        Console.WriteLine(content.Content);
+                        await tweetProcessingService.ProcessTweetAsync(content.Content);
                     }
                     else
                     {
