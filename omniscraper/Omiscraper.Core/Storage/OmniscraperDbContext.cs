@@ -19,7 +19,7 @@ namespace Omniscraper.Core.Storage
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite("Data Source=omniscraper.db");
+           
         }
     }
 }

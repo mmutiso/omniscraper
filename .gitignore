@@ -7,6 +7,10 @@
 omniscraper/Omniscraper.Sample/Properties/launchSettings.json
 omniscraper/Omniscraper.Daemon/Properties/launchSettings.json
 
+#sqlite
+
+*.db
+
 # User-specific files
 *.rsuser
 *.suo

@@ -10,6 +10,7 @@ using Omniscraper.Core;
 using Omniscraper.Core.Infrastructure;
 using Omniscraper.Core.Storage;
 using Omniscraper.Core.TwitterScraper;
+using Microsoft.EntityFrameworkCore;
 
 namespace Omniscraper.Daemon
 {
@@ -59,7 +60,7 @@ namespace Omniscraper.Daemon
             services.Configure<TweetProcessorSettings>(context.Configuration.GetSection("TweetProcessorSettings"));
             services.AddDbContext<OmniscraperDbContext>((options) =>
             {
-                //options here.
+                options.UseSqlite("Data Source=omniscraper.db");
             });
             services.AddScoped<IScraperRepository, ScraperRepository>();
 
