@@ -36,6 +36,11 @@ namespace Omniscraper.Core
             //deserialize tweet.
             RawTweet parentTweet = DeserializeTweet(tweetJsonString);
             //determine intent.
+            if (parentTweet.user.screen_name.Equals("omniscraper", StringComparison.OrdinalIgnoreCase))
+            {
+                logger.LogInformation("This is my tweet. Ignoring");
+                return;
+            }
 
             if (!parentTweet.in_reply_to_status_id.HasValue) // this tweet is not in response to any tweet
             {

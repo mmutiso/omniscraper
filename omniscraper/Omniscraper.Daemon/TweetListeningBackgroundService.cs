@@ -42,7 +42,6 @@ namespace Omniscraper.Daemon
                     {
                         try
                         {
-                            Console.WriteLine(content.Content);
                             await tweetProcessingService.ProcessTweetAsync(content.Content);
                         }
                         catch (Exception ex)
