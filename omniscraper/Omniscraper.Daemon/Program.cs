@@ -60,7 +60,7 @@ namespace Omniscraper.Daemon
             services.Configure<TweetProcessorSettings>(context.Configuration.GetSection("TweetProcessorSettings"));
             services.AddDbContext<OmniscraperDbContext>((options) =>
             {
-                options.UseSqlite("Data Source=omniscraper.db");
+                options.UseSqlite(context.Configuration.GetConnectionString("Sqlite"));
             });
             services.AddScoped<IScraperRepository, ScraperRepository>();
 

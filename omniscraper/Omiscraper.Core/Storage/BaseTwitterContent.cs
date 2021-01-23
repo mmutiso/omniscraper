@@ -10,6 +10,7 @@ namespace Omniscraper.Core.Storage
     {
         public Guid Id { get; set; }
         public DateTime DateProcessedUTC { get; set; }
+
         public long TweetId { get; set; }
         public long ParentTweetId { get; set; }
         /// <summary>

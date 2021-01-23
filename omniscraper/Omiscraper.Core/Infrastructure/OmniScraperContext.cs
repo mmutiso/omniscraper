@@ -31,7 +31,7 @@ namespace Omniscraper.Core.Infrastructure
             return stream;
         }
 
-        public async Task<Status> GetStatusByIdAsync(long tweetId)
+        public async Task<Status> GetTweetByIdAsync(long tweetId)
         {
             var tweetQuery = from tweet in context.Status
                              .Where(tweet => tweet.Type == StatusType.Show)
@@ -40,6 +40,11 @@ namespace Omniscraper.Core.Infrastructure
                              select tweet;
 
             return await tweetQuery.FirstOrDefaultAsync();
+        }
+
+        public async Task ReplyToTweetAsync(long parentTweetId, string content)
+        {
+            await context.ReplyAsync((ulong)parentTweetId, content);
         }
 
         IAuthorizer ApplicationAuthorizer(TwitterKeys keys)

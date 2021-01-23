@@ -13,7 +13,7 @@ namespace Omniscraper.Core.Storage
         public OmniscraperDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<OmniscraperDbContext>();
-            optionsBuilder.UseSqlite("Data Source=omniscraper.db");
+            optionsBuilder.UseSqlite(@"Data Source=C:\omniscraper_ws\omniscraper.db");
 
             return new OmniscraperDbContext(optionsBuilder.Options);
         }

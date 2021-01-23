@@ -40,7 +40,15 @@ namespace Omniscraper.Daemon
                 {
                     if (content.Content.Length > 2)
                     {
-                        await tweetProcessingService.ProcessTweetAsync(content.Content);
+                        try
+                        {
+                            Console.WriteLine(content.Content);
+                            await tweetProcessingService.ProcessTweetAsync(content.Content);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "An error occurred when processing tweet");
+                        }
                     }
                     else
                     {

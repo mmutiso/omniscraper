@@ -19,15 +19,17 @@ namespace Omniscraper.Core.TwitterScraper
 
         public async Task<RawTweet> FindByIdAsync(long id)
         {
-            var tweet = await context.GetStatusByIdAsync(id);
+            var tweet = await context.GetTweetByIdAsync(id);
             string tweetStr = JsonConvert.SerializeObject(tweet);
             var rawTweet = JsonConvert.DeserializeObject<RawTweet>(tweetStr);
             return rawTweet;
         }
 
-        public Task ReplyToTweetAsync(long idOftweetToReplyTo, string content)
+        public async Task ReplyToTweetAsync(long idOftweetToReplyTo, string content)
         {
-            throw new NotImplementedException();
+            await context.ReplyToTweetAsync(idOftweetToReplyTo, content);
+
+            
         }
     }
 }

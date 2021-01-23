@@ -14,23 +14,27 @@ namespace Omniscraper.Core.TwitterScraper
         RawTweet Tweet;
         long OriginalTweetId;
         Guid Id;
+        string RequestedBy;
+        
 
-        public TweetNotification(RawTweet tweetNotification, long originalTweetId)
+        public TweetNotification(RawTweet tweetNotification, long originalTweetId, string requestedBy)
         {
             Tweet = tweetNotification;
             OriginalTweetId = originalTweetId;
             Id = Guid.NewGuid();
+            RequestedBy = requestedBy;
         }
 
         public TwitterVideo GetVideo()
         {
             if (HasVideo())
             {
-                var video = new TwitterVideo(Id, GetVideoUrl(), Tweet.id, OriginalTweetId);
+                var video = new TwitterVideo(Id, GetVideoUrl(), Tweet.id, OriginalTweetId, RequestedBy);
                 return video;
             }
             return null;
         }
+
         
 
         public bool HasVideo()

@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Omniscraper.Core.TwitterScraper.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace Omniscraper.Core
 {
@@ -30,6 +31,8 @@ namespace Omniscraper.Core
 
         public async Task ProcessTweetAsync(string tweetJsonString)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             //deserialize tweet.
             RawTweet parentTweet = DeserializeTweet(tweetJsonString);
             //determine intent.
@@ -44,7 +47,7 @@ namespace Omniscraper.Core
             }
 
             RawTweet videoTweet = await twitterRepository.FindByIdAsync(parentTweet.in_reply_to_status_id.Value);
-            TweetNotification tweet = new TweetNotification(videoTweet, parentTweet.id);
+            TweetNotification tweet = new TweetNotification(videoTweet, parentTweet.id, parentTweet.user.screen_name);
 
             //handle intent
             if (tweet.HasVideo())
@@ -53,11 +56,15 @@ namespace Omniscraper.Core
 
                 await scraperRepository.SaveTwitterVideoAsync(video);
 
-                string response = video.GetResponseContent(settings.BaseUrl);
+                string response = video.GetResponseContent(settings.BaseUrl, video.RequestedBy);
                 //send back response
                 await twitterRepository.ReplyToTweetAsync(video.ParentTweetId, response);
+                stopwatch.Stop();
+                logger.LogInformation($"Processed video request in {stopwatch.ElapsedMilliseconds}ms");
                 return;
             }
+
+            logger.LogWarning($"The tweet being responded to didn't have a video -> {videoTweet.id}");
             return;
 
         }
