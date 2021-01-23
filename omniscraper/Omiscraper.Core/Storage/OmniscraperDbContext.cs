@@ -21,5 +21,13 @@ namespace Omniscraper.Core.Storage
         {
            
         }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<TwitterVideo>(options =>
+            {
+                options.ToTable("twitter_videos");
+            });
+        }
     }
 }

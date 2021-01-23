@@ -4,44 +4,54 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Omniscraper.Core.Storage;
 
 namespace Omniscraper.Core.Migrations
 {
     [DbContext(typeof(OmniscraperDbContext))]
-    [Migration("20210123073745_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210123103448_snake_case_named_columns")]
+    partial class snake_case_named_columns
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseIdentityByDefaultColumns()
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("Omniscraper.Core.Storage.TwitterVideo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("DateProcessedUTC")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("date_processed_utc");
 
                     b.Property<long>("ParentTweetId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint")
+                        .HasColumnName("parent_tweet_id");
 
                     b.Property<string>("RequestedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text")
+                        .HasColumnName("requested_by");
 
                     b.Property<long>("TweetId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint")
+                        .HasColumnName("tweet_id");
 
                     b.Property<string>("Url")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text")
+                        .HasColumnName("url");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_twitter_videos");
 
-                    b.ToTable("TwitterVideos");
+                    b.ToTable("twitter_videos");
                 });
 #pragma warning restore 612, 618
         }

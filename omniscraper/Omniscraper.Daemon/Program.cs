@@ -60,7 +60,7 @@ namespace Omniscraper.Daemon
             services.Configure<TweetProcessorSettings>(context.Configuration.GetSection("TweetProcessorSettings"));
             services.AddDbContext<OmniscraperDbContext>((options) =>
             {
-                options.UseSqlite(context.Configuration.GetConnectionString("Sqlite"));
+                options.UseSqlite(context.Configuration.GetConnectionString("Postgres"));
             });
             services.AddScoped<IScraperRepository, ScraperRepository>();
 

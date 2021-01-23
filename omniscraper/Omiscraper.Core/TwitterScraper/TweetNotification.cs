@@ -15,6 +15,7 @@ namespace Omniscraper.Core.TwitterScraper
         long OriginalTweetId;
         Guid Id;
         string RequestedBy;
+
         
 
         public TweetNotification(RawTweet tweetNotification, long originalTweetId, string requestedBy)
