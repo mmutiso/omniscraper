@@ -46,6 +46,20 @@ namespace Omniscraper.Core
                 return;
             }
 
+            TwitterVideo twitterVideo;
+            bool exists = scraperRepository.GetIfVideoExists(parentTweet.in_reply_to_status_id.Value, out twitterVideo);
+            if (exists)
+            {
+                logger.LogInformation($"This tweet existed {parentTweet.in_reply_to_status_id.Value}.");
+
+                string response = twitterVideo.GetResponseContent(settings.BaseUrl, parentTweet.user.screen_name);
+                //send back response
+                await twitterRepository.ReplyToTweetAsync(parentTweet.id, response);
+                stopwatch.Stop();
+                logger.LogInformation($"Processed video request in {stopwatch.ElapsedMilliseconds}ms");
+                return;
+            }
+
             RawTweet videoTweet = await twitterRepository.FindByIdAsync(parentTweet.in_reply_to_status_id.Value);
             TweetNotification tweet = new TweetNotification(videoTweet, parentTweet.id, parentTweet.user.screen_name);
 
@@ -68,6 +82,8 @@ namespace Omniscraper.Core
             return;
 
         }
+
+       
 
         private RawTweet DeserializeTweet(string tweetJsonString)
         {

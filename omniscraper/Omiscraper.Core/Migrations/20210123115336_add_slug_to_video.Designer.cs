@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Omniscraper.Core.Storage;
@@ -9,9 +10,10 @@ using Omniscraper.Core.Storage;
 namespace Omniscraper.Core.Migrations
 {
     [DbContext(typeof(OmniscraperDbContext))]
-    partial class OmniscraperDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210123115336_add_slug_to_video")]
+    partial class add_slug_to_video
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
