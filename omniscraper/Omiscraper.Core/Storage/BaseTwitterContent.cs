@@ -11,9 +11,9 @@ namespace Omniscraper.Core.Storage
         public Guid Id { get; set; }
         public DateTime DateProcessedUTC { get; set; }
 
-        public long TweetId { get; set; }
+        public long TweetWithVideoId { get; set; }
         public string Slug { get; set; }
-        public long ParentTweetId { get; set; }
+        public long RequestingTweetId { get; set; }
         /// <summary>
         /// This is the @screen_name in Twitter. We will use it when responding to the user.
         /// </summary>
@@ -28,8 +28,8 @@ namespace Omniscraper.Core.Storage
         {
             Id = id;
             DateProcessedUTC = dateProcessedUTC;
-            TweetId = tweetId;
-            ParentTweetId = parentTweetId;
+            TweetWithVideoId = tweetId;
+            RequestingTweetId = parentTweetId;
             Slug = id.ToString().Split("-")[0];
         }
     }

@@ -17,14 +17,14 @@ namespace Omniscraper.Core.Storage
         public  bool GetIfVideoExists(long tweetId, out TwitterVideo video)
         {
             bool exists = context.TwitterVideos
-                .Any(x => x.TweetId == tweetId);
+                .Any(x => x.TweetWithVideoId == tweetId);
 
             video = default;
 
             if (exists)
             {
                 video = context.TwitterVideos
-                    .Where(x => x.TweetId == tweetId)
+                    .Where(x => x.TweetWithVideoId == tweetId)
                     .Single();
 
             }

@@ -16,11 +16,18 @@ namespace Omniscraper.Core.Storage
 
         }
 
-        public TwitterVideo(Guid id, string url, long tweetId, long parentTweetId, string requestedBy)
-            :base(id, DateTime.UtcNow, tweetId, parentTweetId)
+        public TwitterVideo(Guid id, string url, long tweetWithVideoId, long requestingTweetId, string requestedBy)
+            :base(id, DateTime.UtcNow, tweetWithVideoId, requestingTweetId)
         {
             Url = url;
             RequestedBy = requestedBy;
+        }
+
+        public TwitterVideo CreateForNewTweet(long requestingTweetId, string requestedBy)
+        {
+            TwitterVideo video = new TwitterVideo(Guid.NewGuid(), this.Url, this.TweetWithVideoId, requestingTweetId, requestedBy);
+
+            return video;
         }
     }
 }

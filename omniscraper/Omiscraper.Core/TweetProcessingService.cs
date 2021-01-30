@@ -34,39 +34,42 @@ namespace Omniscraper.Core
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             //deserialize tweet.
-            RawTweet parentTweet = DeserializeTweet(tweetJsonString);
+            RawTweet requestingTweet = DeserializeTweet(tweetJsonString);
             //determine intent.
-            if (parentTweet.user.screen_name.Equals("omniscraper", StringComparison.OrdinalIgnoreCase))
+            if (requestingTweet.user.screen_name.Equals("omniscraper", StringComparison.OrdinalIgnoreCase))
             {
                 logger.LogInformation("This is my tweet. Ignoring");
                 return;
             }
 
-            if (!parentTweet.in_reply_to_status_id.HasValue) // this tweet is not in response to any tweet
+            if (!requestingTweet.in_reply_to_status_id.HasValue) // this tweet is not in response to any tweet
             {
                 if (logger.IsEnabled(LogLevel.Warning))
                 {
-                    logger.LogWarning("Received tweet with id {} that is not a reply to another", parentTweet.id);
+                    logger.LogWarning("Received tweet with id {} that is not a reply to another", requestingTweet.id);
                 }
                 return;
             }
 
             TwitterVideo twitterVideo;
-            bool exists = scraperRepository.GetIfVideoExists(parentTweet.in_reply_to_status_id.Value, out twitterVideo);
+            bool exists = scraperRepository.GetIfVideoExists(requestingTweet.in_reply_to_status_id.Value, out twitterVideo);
             if (exists)
             {
-                logger.LogInformation($"This tweet existed {parentTweet.in_reply_to_status_id.Value}.");
+                logger.LogInformation($"This tweet existed {requestingTweet.in_reply_to_status_id.Value}.");
 
-                string response = twitterVideo.GetResponseContent(settings.BaseUrl, parentTweet.user.screen_name);
+                var mutatedVideo = twitterVideo.CreateForNewTweet(requestingTweet.id, requestingTweet.user.screen_name);
+                await scraperRepository.SaveTwitterVideoAsync(mutatedVideo);
+
+                string response = mutatedVideo.GetResponseContent(settings.BaseUrl);
                 //send back response
-                await twitterRepository.ReplyToTweetAsync(parentTweet.id, response);
+                await twitterRepository.ReplyToTweetAsync(mutatedVideo.RequestingTweetId, response);
                 stopwatch.Stop();
                 logger.LogInformation($"Processed video request in {stopwatch.ElapsedMilliseconds}ms");
                 return;
             }
 
-            RawTweet videoTweet = await twitterRepository.FindByIdAsync(parentTweet.in_reply_to_status_id.Value);
-            TweetNotification tweet = new TweetNotification(videoTweet, parentTweet.id, parentTweet.user.screen_name);
+            RawTweet videoTweet = await twitterRepository.FindByIdAsync(requestingTweet.in_reply_to_status_id.Value);
+            TweetNotification tweet = new TweetNotification(videoTweet, requestingTweet.id, requestingTweet.user.screen_name);
 
             //handle intent
             if (tweet.HasVideo())
@@ -75,9 +78,9 @@ namespace Omniscraper.Core
 
                 await scraperRepository.SaveTwitterVideoAsync(video);
 
-                string response = video.GetResponseContent(settings.BaseUrl, video.RequestedBy);
+                string response = video.GetResponseContent(settings.BaseUrl);
                 //send back response
-                await twitterRepository.ReplyToTweetAsync(video.ParentTweetId, response);
+                await twitterRepository.ReplyToTweetAsync(video.RequestingTweetId, response);
                 stopwatch.Stop();
                 logger.LogInformation($"Processed video request in {stopwatch.ElapsedMilliseconds}ms");
                 return;

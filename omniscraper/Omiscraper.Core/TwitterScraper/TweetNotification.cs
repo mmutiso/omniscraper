@@ -11,17 +11,17 @@ namespace Omniscraper.Core.TwitterScraper
 {
     public class TweetNotification
     {
-        RawTweet Tweet;
-        long OriginalTweetId;
+        RawTweet TweetWithVideo;
+        long RequestingTweetId;
         Guid Id;
         string RequestedBy;
 
         
 
-        public TweetNotification(RawTweet tweetNotification, long originalTweetId, string requestedBy)
+        public TweetNotification(RawTweet tweetWithVideo, long requestingTweetId, string requestedBy)
         {
-            Tweet = tweetNotification;
-            OriginalTweetId = originalTweetId;
+            TweetWithVideo = tweetWithVideo;
+            RequestingTweetId = requestingTweetId;
             Id = Guid.NewGuid();
             RequestedBy = requestedBy;
         }
@@ -30,7 +30,7 @@ namespace Omniscraper.Core.TwitterScraper
         {
             if (HasVideo())
             {
-                var video = new TwitterVideo(Id, GetVideoUrl(), Tweet.id, OriginalTweetId, RequestedBy);
+                var video = new TwitterVideo(Id, GetVideoUrl(), TweetWithVideo.id, RequestingTweetId, RequestedBy);
                 return video;
             }
             return null;
@@ -40,9 +40,9 @@ namespace Omniscraper.Core.TwitterScraper
 
         public bool HasVideo()
         {
-            if (Tweet != null)
+            if (TweetWithVideo != null)
             {
-                var extendedEntities = Tweet.ExtendedEntities;
+                var extendedEntities = TweetWithVideo.ExtendedEntities;
                 if (extendedEntities != null)
                 {
                     var mediaEntities = extendedEntities.MediaEntities;
@@ -66,9 +66,9 @@ namespace Omniscraper.Core.TwitterScraper
         private List<TweetVideoLink> GetVideoLinks()
         {
             List<TweetVideoLink> videoLinks = new List<TweetVideoLink>(0);
-            if (Tweet != null)
+            if (TweetWithVideo != null)
             {
-                var extendedEntities = Tweet.ExtendedEntities;
+                var extendedEntities = TweetWithVideo.ExtendedEntities;
                 if (extendedEntities != null)
                 {
                     var mediaEntities = extendedEntities.MediaEntities;
