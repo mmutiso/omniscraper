@@ -25,7 +25,7 @@ namespace Omniscraper.Core.Storage
             {
                 video = context.TwitterVideos
                     .Where(x => x.TweetWithVideoId == tweetId)
-                    .Single();
+                    .FirstOrDefault(); // There could be multiple
 
             }
             return exists;

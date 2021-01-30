@@ -27,7 +27,8 @@ namespace Omniscraper.Core.Storage
             builder.Entity<TwitterVideo>(options =>
             {
                 options.ToTable("twitter_videos");
-                options.HasIndex(x => x.TweetWithVideoId).IsUnique();
+                options.HasIndex(x => x.Slug).IsUnique();
+                options.HasIndex(x => x.TweetWithVideoId);
             });
         }
     }
