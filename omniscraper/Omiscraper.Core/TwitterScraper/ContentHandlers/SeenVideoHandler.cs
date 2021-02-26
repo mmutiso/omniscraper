@@ -13,19 +13,17 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
     public class SeenVideoHandler : AbstractTweetContentHandler
     {
         IScraperRepository scraperRepository;
-        ILogger<SeenVideoHandler> logger;
         TweetProcessorSettings settings;
         ITwitterRepository twitterRepository;
 
-        public SeenVideoHandler(IScraperRepository scraperRepository, ILogger<SeenVideoHandler> logger,
+        public SeenVideoHandler(IScraperRepository scraperRepository, 
             IOptions<TweetProcessorSettings> options, ITwitterRepository twitterRepository)
         {
             this.scraperRepository = scraperRepository;
-            this.logger = logger;
             settings = options.Value;
             this.twitterRepository = twitterRepository;
         }
-        public override async Task HandleAsync(ContentRequestNotification notification)
+        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
         {
             TwitterVideo twitterVideo;
             bool exists = scraperRepository.GetIfVideoExists(notification.IdOfTweetBeingRepliedTo.Value, out twitterVideo);
@@ -43,7 +41,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             }
             else
             {
-                await base.HandleAsync(notification);
+                await base.HandleAsync(notification, logger);
             }
         }
     }

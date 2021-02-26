@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
@@ -12,6 +13,6 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
     {
         ITweetContentHandler SetNext(ITweetContentHandler handler);
 
-        Task HandleAsync(ContentRequestNotification notification);
+        Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger);
     }
 }

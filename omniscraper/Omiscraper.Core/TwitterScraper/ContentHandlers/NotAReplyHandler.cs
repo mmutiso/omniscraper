@@ -10,13 +10,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
     public class NotAReplyHandler: AbstractTweetContentHandler
     {
-        ILogger<NotAReplyHandler> logger;
-
-        public NotAReplyHandler(ILogger<NotAReplyHandler> logger)
-        {
-            this.logger = logger;
-        }
-        public override async Task HandleAsync(ContentRequestNotification notification)
+        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
         {
             await Task.CompletedTask;
 
@@ -30,7 +24,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             }
             else
             {
-                await base.HandleAsync(notification);
+                await base.HandleAsync(notification, logger);
             }
         }
     }

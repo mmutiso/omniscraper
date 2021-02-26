@@ -10,13 +10,8 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
     public class SelfTweetHandler : AbstractTweetContentHandler
     {
-        ILogger<SelfTweetHandler> logger;
-        public SelfTweetHandler(ILogger<SelfTweetHandler> logger)
-        {
-            this.logger = logger;
-        }
 
-        public override async Task HandleAsync(ContentRequestNotification notification)
+        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
         {
             await Task.CompletedTask;
 
@@ -26,7 +21,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
                 return;
             }
             {
-                await base.HandleAsync(notification);
+                await base.HandleAsync(notification, logger);
             }
         }
     }

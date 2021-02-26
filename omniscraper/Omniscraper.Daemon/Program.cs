@@ -11,6 +11,7 @@ using Omniscraper.Core.Infrastructure;
 using Omniscraper.Core.Storage;
 using Omniscraper.Core.TwitterScraper;
 using Microsoft.EntityFrameworkCore;
+using Omniscraper.Core.TwitterScraper.ContentHandlers;
 
 namespace Omniscraper.Daemon
 {
@@ -53,7 +54,7 @@ namespace Omniscraper.Daemon
                     .GetRequiredService<ILoadApplicationCredentials>()
                     .Load();
 
-            services.AddSingleton<TwitterKeys>(keys);
+            services.AddSingleton(keys);
             services.AddScoped<OmniScraperContext>();
             services.AddScoped<ITwitterRepository, LinqToTwitterRepository>();
             services.AddScoped<TweetProcessingService>();
@@ -66,7 +67,9 @@ namespace Omniscraper.Daemon
             services.AddScoped<IScraperRepository, ScraperRepository>();
 
             services.AddHostedService<TweetListeningBackgroundService>();
-            services.AddLogging();    
+            services.AddLogging();
+
+            services.AddScoped<TwitterContentHandlerFactory>();
         }
 
     }

@@ -10,23 +10,20 @@ using Omniscraper.Core.TwitterScraper.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using Omniscraper.Core.TwitterScraper.ContentHandlers;
 
 namespace Omniscraper.Core
 {
     public class TweetProcessingService
     {
-        ITwitterRepository twitterRepository;
-        IScraperRepository scraperRepository;
+       
         ILogger<TweetProcessingService> logger;
-        TweetProcessorSettings settings; 
+        TwitterContentHandlerFactory handlerFactory;
 
-        public TweetProcessingService(ITwitterRepository twitterRepository, IScraperRepository scraperRepository,
-            ILogger<TweetProcessingService> logger, IOptions<TweetProcessorSettings> options)
+        public TweetProcessingService(ILogger<TweetProcessingService> logger, TwitterContentHandlerFactory handlerFactory)
         {
-            this.twitterRepository = twitterRepository;
-            this.scraperRepository = scraperRepository;
             this.logger = logger;
-            settings = options.Value;
+            this.handlerFactory = handlerFactory;
         }
 
         public async Task ProcessTweetAsync(string tweetJsonString)
@@ -35,14 +32,12 @@ namespace Omniscraper.Core
             stopwatch.Start();
             //deserialize tweet.
             RawTweet requestingTweet = DeserializeTweet(tweetJsonString);
-            
 
+            ITweetContentHandler handler = handlerFactory.BuildHandlerPipeline();
+            var requestNotification = requestingTweet.CreateRequestNotification();
 
-
-
-        }
-
-       
+            await handler.HandleAsync(requestNotification, logger);
+        }       
 
         private RawTweet DeserializeTweet(string tweetJsonString)
         {
