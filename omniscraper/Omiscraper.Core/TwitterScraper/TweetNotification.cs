@@ -11,7 +11,7 @@ namespace Omniscraper.Core.TwitterScraper
 {
     public class TweetNotification
     {
-        RawTweet TweetWithVideo;
+        public RawTweet TweetWithVideo;
         long RequestingTweetId;
         Guid Id;
         string RequestedBy;
