@@ -24,7 +24,7 @@ namespace Omniscraper.Sample
 
         static async Task AuthSampleAsync()
         {
-            ILoadApplicationCredentials credentialsLoader = new EnvironmentVariablesKeysLoader();
+            ILoadApplicationCredentials credentialsLoader = new EnvironmentVariablesKeysLoader(default);
             TwitterKeys keys = credentialsLoader.Load();
 
             var auth = new SingleUserAuthorizer
@@ -44,7 +44,7 @@ namespace Omniscraper.Sample
 
         static async Task StreamMain()
         {
-            ILoadApplicationCredentials credentialsLoader = new EnvironmentVariablesKeysLoader();
+            ILoadApplicationCredentials credentialsLoader = new EnvironmentVariablesKeysLoader(default);
             TwitterKeys keys = credentialsLoader.Load();
 
             OmniScraperContext context = new OmniScraperContext(keys);
