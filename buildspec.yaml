@@ -12,3 +12,4 @@ phases:
 artifacts:
   files:
     - omniscraper/Omniscraper.Daemon/omniscraper-release/**/*
+  name: omniscraper-daemon.zip
