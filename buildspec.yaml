@@ -7,7 +7,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      -cd omniscraper/Omniscraper.Daemon
+      - cd omniscraper/Omniscraper.Daemon
       - dotnet publish -c release -o omniscraper-release
 artifacts:
   files:
