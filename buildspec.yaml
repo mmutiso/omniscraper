@@ -12,7 +12,5 @@ phases:
 artifacts:
   files:
     - omniscraper/Omniscraper.Daemon/omniscraper-release/**/*
-  name: omniscraper-daemon.zip
-  
-  artifactIdentifier:
-    discard-paths: yes
+  name: omniscraper-daemon-$(date +%Y-%m-%d)-$CODEBUILD_BUILD_NUMBER.zip
+  discard-paths: yes
