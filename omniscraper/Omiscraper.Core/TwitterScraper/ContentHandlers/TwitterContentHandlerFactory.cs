@@ -28,7 +28,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 
         public ITweetContentHandler BuildHandlerPipeline()
         {
-            ITweetContentHandler selfTweetHandler = new SelfTweetHandler();
+            ITweetContentHandler selfTweetHandler = new SelfTweetHandler(options);
             ITweetContentHandler notAReplyHandler = new NotAReplyHandler();
             ITweetContentHandler seenVideoHandler = new SeenVideoHandler(scraperDatabaseRepository, options, twitterRepository);
             ITweetContentHandler videoHandler = new TweetVideoHandler(scraperDatabaseRepository, twitterRepository, options);

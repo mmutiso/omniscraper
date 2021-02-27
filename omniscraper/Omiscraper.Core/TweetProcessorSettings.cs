@@ -9,5 +9,6 @@ namespace Omniscraper.Core
     public class TweetProcessorSettings
     {
         public string BaseUrl { get; set; }
+        public string StreamListeningKeyword { get; set; }
     }
 }

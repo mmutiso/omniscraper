@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +18,15 @@ namespace Omniscraper.Daemon
         ILogger<TweetListeningBackgroundService> logger;
         OmniScraperContext omniContext;
         TweetProcessingService tweetProcessingService;
+        TweetProcessorSettings settings;
 
         public TweetListeningBackgroundService(ILogger<TweetListeningBackgroundService> logger, OmniScraperContext omniScraperContext,
-             TweetProcessingService tweetProcessingService)
+             TweetProcessingService tweetProcessingService, IOptions<TweetProcessorSettings> options)
         {
             this.logger = logger;
             omniContext = omniScraperContext;
             this.tweetProcessingService = tweetProcessingService;
+            settings = options.Value;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -31,7 +34,8 @@ namespace Omniscraper.Daemon
             {
                 List<string> keywords = new List<string>
                     {
-                        "omniscraper"
+                        //"omniscraper"
+                        settings.StreamListeningKeyword
                     };
 
                 IQueryable<Streaming> twitterStream = omniContext.CreateStream(keywords, stoppingToken);
