@@ -13,3 +13,6 @@ artifacts:
   files:
     - omniscraper/Omniscraper.Daemon/omniscraper-release/**/*
   name: omniscraper-daemon.zip
+  
+  artifactIdentifier:
+    discard-paths: yes
