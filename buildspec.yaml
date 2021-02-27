@@ -1,0 +1,14 @@
+version: 1.0
+phases:
+  pre_build:
+    commands:
+      - echo Restore started on `date`
+      - dotnet restore omniscraper/Omniscraper.Daemon/Omniscraper.Daemon.csproj
+  build:
+    commands:
+      - echo Build started on `date`
+      -cd omniscraper/Omniscraper.Daemon
+      - dotnet publish -c release -o omniscraper-release
+artifacts:
+  files:
+    - omniscraper-release/*
