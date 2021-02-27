@@ -11,4 +11,4 @@ phases:
       - dotnet publish -c release -o omniscraper-release
 artifacts:
   files:
-    - **/*
+    - omniscraper/Omniscraper.Daemon/omniscraper-release/**/*
