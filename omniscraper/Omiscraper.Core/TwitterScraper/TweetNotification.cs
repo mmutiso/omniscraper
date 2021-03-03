@@ -114,6 +114,7 @@ namespace Omniscraper.Core.TwitterScraper
                 if (link.BitRate > maxBitRate)
                 {
                     videoLink = link.Url;
+                    maxBitRate = link.BitRate;
                 }
             });
 
