@@ -6,6 +6,8 @@
 #launch settings include env variables
 omniscraper/Omniscraper.Sample/Properties/launchSettings.json
 omniscraper/Omniscraper.Daemon/Properties/launchSettings.json
+omniscraper/Omniscraper.Next/Properties/launchSettings.json
+
 
 #sqlite
 
