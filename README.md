@@ -5,7 +5,7 @@ Try for yourself by tagging [@omniscraper](https://twitter.com/omniscraper) on T
 
 The bot will reply with either:
 - A link to thread.
-- A link to a video in the replied tweet.
+- A link to a video/gif in the replied tweet.
 
 
 
@@ -25,4 +25,4 @@ The web part to all this is developed from [this](https://github.com/frankiemuti
 
 ## Support 
 
-As at this point, support by following and tagging [@omniscraper](https://twitter.com/omniscraper) on Twitter to capture your videos and soon threads.
+As at this point, support by following and tagging [@omniscraper](https://twitter.com/omniscraper) on Twitter to capture your videos/GIFS and soon threads.
