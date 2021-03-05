@@ -10,6 +10,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+        working-directory: omniscraper/Omniscraper.Daemon
 
     steps:
     - uses: actions/checkout@v2
@@ -17,9 +19,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Change to project directory
-      run: cd omniscraper/Omniscraper.Daemon
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: ${{env.working-directory}}
     - name: Build
       run: dotnet build --no-restore
+      working-directory: ${{env.working-directory}}
