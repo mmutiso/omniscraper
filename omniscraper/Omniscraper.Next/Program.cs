@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
 using System.IO;
+using LinqToTwitter.Common;
 
 namespace Omniscraper.Next
 {
@@ -24,7 +25,7 @@ namespace Omniscraper.Next
             await DoFilterStreamAsync(context);
 
 
-            Console.WriteLine("Assigned rules");
+            Console.WriteLine("DONE TESTING");
         }
 
         static async Task AddRulesAsync(TwitterContext twitterCtx)
@@ -56,6 +57,32 @@ namespace Omniscraper.Next
                         $"\nValue: {error.Value}" +
                         $"\nID:    {error.ID}" +
                         $"\nType:  {error.Type}"));
+        }
+
+        static async Task DoSearchAsync(TwitterContext twitterCtx)
+        {
+            string searchTerm = "\"LINQ to Twitter\" OR Linq2Twitter OR LinqToTwitter OR JoeMayo";
+            //searchTerm = "кот (";
+
+            Search? searchResponse =
+                await
+                (from search in twitterCtx.Search
+                 where search.Type == SearchType.Search &&
+                       search.Query == searchTerm &&
+                       search.IncludeEntities == true &&
+                       search.TweetMode == TweetMode.Extended
+                 select search)
+                .SingleOrDefaultAsync();
+
+            if (searchResponse?.Statuses != null)
+                searchResponse.Statuses.ForEach(tweet =>
+                    Console.WriteLine(
+                        "\n  User: {0} ({1})\n  Tweet: {2}",
+                        tweet.User?.ScreenNameResponse,
+                        tweet.User?.UserIDResponse,
+                        tweet.Text ?? tweet.FullText));
+            else
+                Console.WriteLine("No entries found.");
         }
 
         static async Task DeleteRulesAsync(TwitterContext twitterCtx)
@@ -101,7 +128,8 @@ namespace Omniscraper.Next
                     (from strm in twitterCtx.Streaming
                                             .WithCancellation(cancelTokenSrc.Token)
                      where strm.Type == StreamingType.Filter
-                     && strm.TweetFields == "conversation_id"
+                     && strm.TweetFields == "conversation_id,in_reply_to_user_id,author_id"
+                     && strm.Expansions== "author_id"
                      select strm)
                     .StartAsync(async strm =>
                     {
@@ -145,7 +173,7 @@ namespace Omniscraper.Next
             return await Task.FromResult(0);
         }
 
-            static async Task ValidateRulesAsync(TwitterContext twitterCtx)
+        static async Task ValidateRulesAsync(TwitterContext twitterCtx)
         {
             var rules = new List<StreamingAddRule>
             {
@@ -173,9 +201,7 @@ namespace Omniscraper.Next
                         $"\nValue: {error.Value}" +
                         $"\nID:    {error.ID}" +
                         $"\nType:  {error.Type}"));
-        }
-
-       
+        }             
 
         static async Task<IAuthorizer> AuthSampleAsync()
         {
