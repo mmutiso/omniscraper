@@ -122,8 +122,8 @@ namespace Omniscraper.Next
                  where search.Type == SearchType.RecentSearch &&
                        search.Query == searchTerm &&
                        search.MaxResults == 100 &&
-                       search.TweetFields == "conversation_id,in_reply_to_user_id,author_id,referenced_tweets" &&
-                       search.Expansions == "author_id"
+                       search.TweetFields == "attachments,conversation_id,in_reply_to_user_id,author_id,referenced_tweets" &&
+                       search.Expansions == "author_id,referenced_tweets.id,referenced_tweets.id.author_id"
 
                  select search)
                 .SingleOrDefaultAsync();
