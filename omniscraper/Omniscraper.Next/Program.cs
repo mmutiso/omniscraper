@@ -20,10 +20,11 @@ namespace Omniscraper.Next
             var context = new TwitterContext(authorizer);
 
             //await DeleteRulesAsync(context);
-            await AddRulesAsync(context);
+            // await AddRulesAsync(context);
             //await ValidateRulesAsync(context);
-            await DoFilterStreamAsync(context);
-
+            //await DoFilterStreamAsync(context);
+            //await SingleTweetLookUpAsync(context);
+            await DoSearchAsync(context);
 
             Console.WriteLine("DONE TESTING");
         }
@@ -59,30 +60,70 @@ namespace Omniscraper.Next
                         $"\nType:  {error.Type}"));
         }
 
+        static async Task SingleTweetLookUpAsync(TwitterContext twitterContext)
+        {
+            var result = await 
+                (from t in twitterContext.Tweets
+                 where t.Ids == "1367852145031208965" &&
+                 t.TweetFields == "conversation_id" &&                
+                 t.Type == TweetType.Lookup
+                 select t)
+                 .SingleOrDefaultAsync();
+
+            if (result.Tweets != null)
+                result.Tweets.ForEach(tweet =>
+                    Console.WriteLine(
+                        "\n  User: {0}, Conversation ID {1}, Tweet: {2}",
+                        tweet.ID,
+                        tweet.ConversationID,
+                        tweet.Text));
+            else
+                Console.WriteLine("No entries found.");
+        }
+
+
+        static async Task ParseThread(List<Tweet> tweets, string authorId)
+        {
+            await Task.CompletedTask;
+
+            var thread = new List<Tweet>();
+            foreach (var tweet in tweets.OrderBy(x=>x.ID))
+            {
+                if (tweet.AuthorID == authorId)
+                    thread.Add(tweet);
+                else
+                    break;
+            }
+            foreach (var tweet in thread)
+            {
+                Console.WriteLine(tweet.Text);
+            }
+        }
+
         static async Task DoSearchAsync(TwitterContext twitterCtx)
         {
-            string searchTerm = "\"LINQ to Twitter\" OR Linq2Twitter OR LinqToTwitter OR JoeMayo";
-            //searchTerm = "кот (";
+            string searchTerm = "conversation_id:1367852145031208965";
 
-            Search? searchResponse =
+            TwitterSearch? searchResponse =
                 await
-                (from search in twitterCtx.Search
-                 where search.Type == SearchType.Search &&
+                (from search in twitterCtx.TwitterSearch
+                 where search.Type == SearchType.RecentSearch &&
                        search.Query == searchTerm &&
-                       search.IncludeEntities == true &&
-                       search.TweetMode == TweetMode.Extended
+                       search.MaxResults == 100 &&
+                       search.TweetFields == "conversation_id,in_reply_to_user_id,author_id" &&
+                       search.Expansions == "author_id"
+
                  select search)
                 .SingleOrDefaultAsync();
 
-            if (searchResponse?.Statuses != null)
-                searchResponse.Statuses.ForEach(tweet =>
-                    Console.WriteLine(
-                        "\n  User: {0} ({1})\n  Tweet: {2}",
-                        tweet.User?.ScreenNameResponse,
-                        tweet.User?.UserIDResponse,
-                        tweet.Text ?? tweet.FullText));
+            Console.WriteLine("-=================================-");
+            if (searchResponse?.Tweets != null)
+            {
+                await ParseThread(searchResponse.Tweets, "50703014");
+            }
             else
                 Console.WriteLine("No entries found.");
+            Console.WriteLine("-=================================-");
         }
 
         static async Task DeleteRulesAsync(TwitterContext twitterCtx)
@@ -129,7 +170,7 @@ namespace Omniscraper.Next
                                             .WithCancellation(cancelTokenSrc.Token)
                      where strm.Type == StreamingType.Filter
                      && strm.TweetFields == "conversation_id,in_reply_to_user_id,author_id"
-                     && strm.Expansions== "author_id"
+                     && strm.Expansions== "author_id" //expanding on the author Id includes the basic user entity which has the username
                      select strm)
                     .StartAsync(async strm =>
                     {
@@ -167,7 +208,12 @@ namespace Omniscraper.Next
                 Console.WriteLine(strm.Content);
                 Tweet? tweet = strm?.Entity?.Tweet;
                 if (tweet != null)
+                {
                     Console.WriteLine($"\nTweet ID: {tweet.ID}, Tweet Text: {tweet.Text}, Conversation ID: {tweet.ConversationID}");
+                    Console.WriteLine(tweet.InReplyToUserID);
+                }
+                
+                    
             }
 
             return await Task.FromResult(0);
