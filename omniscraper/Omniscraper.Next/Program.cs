@@ -82,27 +82,39 @@ namespace Omniscraper.Next
         }
 
 
-        static async Task ParseThread(List<Tweet> tweets, string authorId)
+        /// <summary>
+        /// 2 or more tweets qualify to be a thread
+        /// https://help.twitter.com/en/using-twitter/create-a-thread
+        /// </summary>
+        /// <param name="tweets"></param>
+        /// <param name="authorId"></param>
+        /// <param name="conversationId"></param>
+        /// <returns></returns>
+        static async Task ParseThread(List<Tweet> tweets, string authorId, string conversationId)
         {
             await Task.CompletedTask;
 
             var thread = new List<Tweet>();
-            foreach (var tweet in tweets.OrderBy(x=>x.ID))
+            string currentTweetId = conversationId;
+
+            foreach (var tweet in tweets.OrderBy(c=>c.ID))
             {
-                if (tweet.AuthorID == authorId)
+                if (tweet.AuthorID == authorId && tweet.ReferencedTweets[0].ID == currentTweetId && tweet.ReferencedTweets[0].Type == "replied_to")
+                {
                     thread.Add(tweet);
-                else
-                    break;
+                    currentTweetId = tweet.ID;
+                }
             }
-            foreach (var tweet in thread)
+
+            thread.ForEach(tweet =>
             {
                 Console.WriteLine(tweet.Text);
-            }
+            });            
         }
 
         static async Task DoSearchAsync(TwitterContext twitterCtx)
         {
-            string searchTerm = "conversation_id:1367852145031208965";
+            string searchTerm = "conversation_id:1368803174522437632";
 
             TwitterSearch? searchResponse =
                 await
@@ -110,7 +122,7 @@ namespace Omniscraper.Next
                  where search.Type == SearchType.RecentSearch &&
                        search.Query == searchTerm &&
                        search.MaxResults == 100 &&
-                       search.TweetFields == "conversation_id,in_reply_to_user_id,author_id" &&
+                       search.TweetFields == "conversation_id,in_reply_to_user_id,author_id,referenced_tweets" &&
                        search.Expansions == "author_id"
 
                  select search)
@@ -119,7 +131,7 @@ namespace Omniscraper.Next
             Console.WriteLine("-=================================-");
             if (searchResponse?.Tweets != null)
             {
-                await ParseThread(searchResponse.Tweets, "50703014");
+                await ParseThread(searchResponse.Tweets, "32885815", "1368803174522437632");
             }
             else
                 Console.WriteLine("No entries found.");
