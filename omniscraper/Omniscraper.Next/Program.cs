@@ -114,7 +114,7 @@ namespace Omniscraper.Next
 
         static async Task DoSearchAsync(TwitterContext twitterCtx)
         {
-            string searchTerm = "conversation_id:1368803174522437632";
+            string searchTerm = "conversation_id:1368919791847800838";
 
             TwitterSearch? searchResponse =
                 await
@@ -131,7 +131,7 @@ namespace Omniscraper.Next
             Console.WriteLine("-=================================-");
             if (searchResponse?.Tweets != null)
             {
-                await ParseThread(searchResponse.Tweets, "32885815", "1368803174522437632");
+                await ParseThread(searchResponse.Tweets, "1067927682023915521", "1368919791847800838");
             }
             else
                 Console.WriteLine("No entries found.");
