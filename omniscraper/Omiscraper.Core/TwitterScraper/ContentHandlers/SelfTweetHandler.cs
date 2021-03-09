@@ -18,17 +18,17 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             settings = options.Value;
         }
 
-        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
+        public override async Task HandleAsync<T>(TwitterStreamModel twitterStreamModel, ILogger<T> logger)
         {
             await Task.CompletedTask;
 
-            if (notification.RequestedBy.Equals(settings.StreamListeningKeyword, StringComparison.OrdinalIgnoreCase))
+            if (twitterStreamModel.RequesterUserName.Equals(settings.StreamListeningKeyword, StringComparison.OrdinalIgnoreCase))
             {
                 logger.LogInformation("This is my tweet. Ignoring");
                 return;
             }
             {
-                await base.HandleAsync(notification, logger);
+                await base.HandleAsync(twitterStreamModel, logger);
             }
         }
     }

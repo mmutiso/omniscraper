@@ -62,15 +62,7 @@ namespace Omniscraper.Sample
             var ctx = new OmniScraperContext(await GetKeysAsync(), default);
             ITwitterRepository twitterRepository = new LinqToTwitterRepository(ctx);
             RawTweetv2 videoTweet = await twitterRepository.FindByIdAsync(id);
-            TweetNotification tweetNotification = new TweetNotification(videoTweet, default, default);
-
-            if (tweetNotification.HasVideo())
-            {
-                var video = tweetNotification.GetVideo();
-
-
-                Console.WriteLine("Done checking for videos");
-            }
+            
 
             static async Task StreamMain()
             {

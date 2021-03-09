@@ -23,15 +23,15 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             settings = options.Value;
             this.twitterRepository = twitterRepository;
         }
-        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
+        public override async Task HandleAsync<T>(TwitterStreamModel twitterStreamModel, ILogger<T> logger)
         {
             TwitterVideo twitterVideo;
-            bool exists = scraperRepository.GetIfVideoExists(notification.IdOfTweetBeingRepliedTo.Value, out twitterVideo);
+            bool exists = scraperRepository.GetIfVideoExists(twitterStreamModel.IdIfTweetBeingRepliedTo.Value, out twitterVideo);
             if (exists)
             {
-                logger.LogInformation($"This tweet existed {notification.IdOfTweetBeingRepliedTo.Value}.");
+                logger.LogInformation($"This tweet existed {twitterStreamModel.IdIfTweetBeingRepliedTo.Value}.");
 
-                var mutatedVideo = twitterVideo.CreateForNewTweet(notification.IdOfRequestingTweet, notification.RequestedBy);
+                var mutatedVideo = twitterVideo.CreateForNewTweet(twitterStreamModel.TweetId, twitterStreamModel.RequesterUserName);
                 await scraperRepository.SaveTwitterVideoAsync(mutatedVideo);
 
                 string response = mutatedVideo.GetResponseContent(settings.BaseUrl);
@@ -41,7 +41,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             }
             else
             {
-                await base.HandleAsync(notification, logger);
+                await base.HandleAsync(twitterStreamModel, logger);
             }
         }
     }

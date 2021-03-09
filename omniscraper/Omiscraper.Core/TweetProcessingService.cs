@@ -19,11 +19,14 @@ namespace Omniscraper.Core
        
         ILogger<TweetProcessingService> logger;
         TwitterContentHandlerFactory handlerFactory;
+        TwitterStreamModelFactory streamModelFactory;
 
-        public TweetProcessingService(ILogger<TweetProcessingService> logger, TwitterContentHandlerFactory handlerFactory)
+        public TweetProcessingService(ILogger<TweetProcessingService> logger, TwitterContentHandlerFactory handlerFactory,
+            TwitterStreamModelFactory streamModelFactory)
         {
             this.logger = logger;
             this.handlerFactory = handlerFactory;
+            this.streamModelFactory = streamModelFactory;
         }
 
         public async Task ProcessTweetAsync(string tweetJsonString)
@@ -31,19 +34,12 @@ namespace Omniscraper.Core
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             //deserialize tweet.
-            RawTweetv2 requestingTweet = DeserializeTweet(tweetJsonString);
+            RawTweetv2 requestingTweet = JsonSerializer.Deserialize<RawTweetv2>(tweetJsonString);
 
             ITweetContentHandler handler = handlerFactory.BuildHandlerPipeline();
-            var requestNotification = requestingTweet.CreateRequestNotification();
+            TwitterStreamModel twitterStreamModel = streamModelFactory.GetTwitterStreamModel(requestingTweet);
 
-            await handler.HandleAsync(requestNotification, logger);
+            await handler.HandleAsync(twitterStreamModel, logger);
         }       
-
-        private RawTweetv2 DeserializeTweet(string tweetJsonString)
-        {
-            var tweet = JsonSerializer.Deserialize<RawTweetv2>(tweetJsonString);
-
-            return tweet;
-        }
     }
 }

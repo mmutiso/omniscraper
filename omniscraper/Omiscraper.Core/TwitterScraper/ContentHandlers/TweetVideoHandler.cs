@@ -15,8 +15,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
     {
         IScraperRepository scraperRepository;
         ITwitterRepository twitterRepository;
-        TweetProcessorSettings settings;
-
+        TweetProcessorSettings settings; 
         public TweetVideoHandler(IScraperRepository repository, 
             ITwitterRepository twitterRepository,  IOptions<TweetProcessorSettings> settings)
         {
@@ -25,14 +24,14 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             this.settings = settings.Value;
         }
 
-        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
+        public override async Task HandleAsync<T>(TwitterStreamModel twitterStreamModel, ILogger<T> logger)
         {
-            RawTweetv2 videoTweet = await twitterRepository.FindByIdAsync(notification.IdOfTweetBeingRepliedTo.Value.ToString());
-            TweetNotification tweetNotification = new TweetNotification(videoTweet, notification.IdOfRequestingTweet, notification.RequestedBy);
+            RawTweetv2 videoTweet = await twitterRepository.FindByIdAsync(twitterStreamModel.IdIfTweetBeingRepliedTo.Value.ToString());
 
-            if (tweetNotification.HasVideo())
+
+            if (twitterStreamModel.HasVideo())
             {
-                var video = tweetNotification.GetVideo();
+                TwitterVideo video = twitterStreamModel.GetVideo();
 
                 await scraperRepository.SaveTwitterVideoAsync(video);
 
@@ -43,8 +42,8 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             }
             else
             {
-                logger.LogWarning($"The tweet being responded to didn't have a video -> {tweetNotification.TweetWithVideo.Id}");
-                await base.HandleAsync(notification, logger);
+                logger.LogWarning($"The tweet being responded to didn't have a video -> {twitterStreamModel.IdIfTweetBeingRepliedTo.Value}");
+                await base.HandleAsync(twitterStreamModel, logger);
             }            
         }
     }

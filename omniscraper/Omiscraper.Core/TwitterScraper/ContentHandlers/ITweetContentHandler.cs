@@ -13,6 +13,6 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
     {
         ITweetContentHandler SetNext(ITweetContentHandler handler);
 
-        Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger);
+        Task HandleAsync<T>(TwitterStreamModel twitterStreamModel, ILogger<T> logger);
     }
 }

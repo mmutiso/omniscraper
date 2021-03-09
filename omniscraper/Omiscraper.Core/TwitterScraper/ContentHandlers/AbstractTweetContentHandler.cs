@@ -20,11 +20,11 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             return nextHandler;
         }
 
-        public virtual async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
+        public virtual async Task HandleAsync<T>(TwitterStreamModel twitterStreamModel, ILogger<T> logger)
         {
             if (nextHandler != null)
             {
-                await nextHandler.HandleAsync(notification, logger);
+                await nextHandler.HandleAsync(twitterStreamModel, logger);
 
                 return;
             }

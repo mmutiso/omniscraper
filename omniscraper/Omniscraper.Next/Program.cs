@@ -22,8 +22,8 @@ namespace Omniscraper.Next
             //await DeleteRulesAsync(context);
             // await AddRulesAsync(context);
             //await ValidateRulesAsync(context);
-            await DoFilterStreamAsync(context);
-            //await SingleTweetLookUpAsync(context);
+            //await DoFilterStreamAsync(context);
+            await SingleTweetLookUpAsync(context);
             //await DoSearchAsync(context);
 
             Console.WriteLine("DONE TESTING");
@@ -64,8 +64,10 @@ namespace Omniscraper.Next
         {
             var result = await 
                 (from t in twitterContext.Tweets
-                 where t.Ids == "1367852145031208965" &&
-                 t.TweetFields == "conversation_id" &&                
+                 where t.Ids == "1369332159455051783" &&
+                 t.TweetFields == "conversation_id" &&  
+                 t.Expansions == "attachments.media_keys" && 
+                 t.MediaFields == "duration_ms,height,media_key,preview_image_url,public_metrics,type,url,width" &&
                  t.Type == TweetType.Lookup
                  select t)
                  .SingleOrDefaultAsync();
@@ -181,8 +183,8 @@ namespace Omniscraper.Next
                     (from strm in twitterCtx.Streaming
                                             .WithCancellation(cancelTokenSrc.Token)
                      where strm.Type == StreamingType.Filter
-                     && strm.TweetFields == "conversation_id,in_reply_to_user_id,author_id"
-                     && strm.Expansions== "author_id" //expanding on the author Id includes the basic user entity which has the username
+                     && strm.TweetFields == "attachments,conversation_id,in_reply_to_user_id,author_id,referenced_tweets"
+                     && strm.Expansions== "author_id,referenced_tweets.id,referenced_tweets.id.author_id" //expanding on the author Id includes the basic user entity which has the username
                      select strm)
                     .StartAsync(async strm =>
                     {
@@ -213,7 +215,6 @@ namespace Omniscraper.Next
             if (strm.HasError)
             {
                 Console.WriteLine($"Error during streaming: {strm.ErrorMessage}");
-
             }
             else
             {
@@ -223,9 +224,7 @@ namespace Omniscraper.Next
                 {
                     Console.WriteLine($"\nTweet ID: {tweet.ID}, Tweet Text: {tweet.Text}, Conversation ID: {tweet.ConversationID}");
                     Console.WriteLine(tweet.InReplyToUserID);
-                }
-                
-                    
+                }        
             }
 
             return await Task.FromResult(0);

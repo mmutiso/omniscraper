@@ -10,21 +10,21 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
     public class NotAReplyHandler: AbstractTweetContentHandler
     {
-        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
+        public override async Task HandleAsync<T>(TwitterStreamModel twitterStreamModel, ILogger<T> logger)
         {
             await Task.CompletedTask;
 
-            if (!notification.IdOfTweetBeingRepliedTo.HasValue) // this tweet is not in response to any tweet
+            if (!twitterStreamModel.IdIfTweetBeingRepliedTo.HasValue) // this tweet is not in response to any tweet
             {
                 if (logger.IsEnabled(LogLevel.Warning))
                 {
-                    logger.LogWarning("Received tweet with id {} that is not a reply to another", notification.IdOfRequestingTweet);
+                    logger.LogWarning("Received tweet with id {} that is not a reply to another", twitterStreamModel.TweetId);
                 }
                 return;
             }
             else
             {
-                await base.HandleAsync(notification, logger);
+                await base.HandleAsync(twitterStreamModel, logger);
             }
         }
     }
