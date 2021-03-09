@@ -11,6 +11,7 @@ using Omniscraper.Core.TwitterScraper;
 using Omniscraper.Core;
 using System.Diagnostics;
 using Omniscraper.Core.Storage;
+using LinqToTwitter.OAuth;
 
 namespace Omniscraper.Sample
 {
@@ -18,7 +19,7 @@ namespace Omniscraper.Sample
     {
         static async Task Main(string[] args)
         {
-            await FetchTweet(1366017614800117762);
+            await FetchTweet("1366017614800117762");
 
             //await AuthSampleAsync();
         }
@@ -56,11 +57,11 @@ namespace Omniscraper.Sample
             await ctx.TweetAsync("Just another day, testing");
         }
 
-        static async Task FetchTweet(long id)
+        static async Task FetchTweet(string id)
         {
-            var ctx = new OmniScraperContext(await GetKeysAsync());
+            var ctx = new OmniScraperContext(await GetKeysAsync(), default);
             ITwitterRepository twitterRepository = new LinqToTwitterRepository(ctx);
-            RawTweet videoTweet = await twitterRepository.FindByIdAsync(id);
+            RawTweetv2 videoTweet = await twitterRepository.FindByIdAsync(id);
             TweetNotification tweetNotification = new TweetNotification(videoTweet, default, default);
 
             if (tweetNotification.HasVideo())
@@ -76,7 +77,7 @@ namespace Omniscraper.Sample
                 ILoadApplicationCredentials credentialsLoader = new EnvironmentVariablesKeysLoader(default);
                 TwitterKeys keys = credentialsLoader.Load();
 
-                OmniScraperContext context = new OmniScraperContext(keys);
+                OmniScraperContext context = new OmniScraperContext(keys, default);
                 ITwitterRepository twitterRepository = new LinqToTwitterRepository(context);
 
                 List<string> keywords = new List<string>
@@ -85,7 +86,7 @@ namespace Omniscraper.Sample
             };
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
 
-                IQueryable<Streaming> twitterStream = context.CreateStream(keywords, tokenSource.Token);
+                IQueryable<Streaming> twitterStream = await context.CreateStreamAsync(keywords, tokenSource.Token);
 
                 Console.WriteLine("Passed stream creation");
 

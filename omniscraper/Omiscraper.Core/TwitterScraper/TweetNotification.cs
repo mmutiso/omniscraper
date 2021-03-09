@@ -11,14 +11,14 @@ namespace Omniscraper.Core.TwitterScraper
 {
     public class TweetNotification
     {
-        public RawTweet TweetWithVideo;
+        public RawTweetv2 TweetWithVideo;
         long RequestingTweetId;
         Guid Id;
         string RequestedBy;
 
         
 
-        public TweetNotification(RawTweet tweetWithVideo, long requestingTweetId, string requestedBy)
+        public TweetNotification(RawTweetv2 tweetWithVideo, long requestingTweetId, string requestedBy)
         {
             TweetWithVideo = tweetWithVideo;
             RequestingTweetId = requestingTweetId;
@@ -30,7 +30,9 @@ namespace Omniscraper.Core.TwitterScraper
         {
             if (HasVideo())
             {
-                var video = new TwitterVideo(Id, GetVideoUrl(), TweetWithVideo.id, RequestingTweetId, RequestedBy);
+                long idOfTweetWithVideo = long.Parse(TweetWithVideo.Id);
+
+                var video = new TwitterVideo(Id, GetVideoUrl(), idOfTweetWithVideo, RequestingTweetId, RequestedBy);
                 return video;
             }
             return null;
@@ -40,26 +42,7 @@ namespace Omniscraper.Core.TwitterScraper
 
         public bool HasVideo()
         {
-            if (TweetWithVideo != null)
-            {
-                var extendedEntities = TweetWithVideo.ExtendedEntities;
-                if (extendedEntities != null)
-                {
-                    var mediaEntities = extendedEntities.MediaEntities;
-                    if (mediaEntities.Count > 0)
-                    {
-                        var videoInfo = mediaEntities[0].VideoInfo;
-                        if (videoInfo != null)
-                        {
-                            var variants = videoInfo.Variants;
-                            if (variants.Count > 0)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
+            
             return false;
         }
 
@@ -68,24 +51,8 @@ namespace Omniscraper.Core.TwitterScraper
             List<TweetVideoLink> videoLinks = new List<TweetVideoLink>(0);
             if (TweetWithVideo != null)
             {
-                var extendedEntities = TweetWithVideo.ExtendedEntities;
-                if (extendedEntities != null)
-                {
-                    var mediaEntities = extendedEntities.MediaEntities;
-                    if (mediaEntities.Count > 0)
-                    {
-                        var videoInfo = mediaEntities[0].VideoInfo;
-                        if (videoInfo != null)
-                        {
-                            var variants = videoInfo.Variants;
-                            if (variants.Count > 0)
-                            {
-                                videoLinks = variants.GetVideoLinks();
-                                return videoLinks;
-                            }
-                        }
-                    }
-                }
+                return default;
+                
             }
             return videoLinks;
         }

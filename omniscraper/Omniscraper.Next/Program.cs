@@ -22,9 +22,9 @@ namespace Omniscraper.Next
             //await DeleteRulesAsync(context);
             // await AddRulesAsync(context);
             //await ValidateRulesAsync(context);
-            //await DoFilterStreamAsync(context);
+            await DoFilterStreamAsync(context);
             //await SingleTweetLookUpAsync(context);
-            await DoSearchAsync(context);
+            //await DoSearchAsync(context);
 
             Console.WriteLine("DONE TESTING");
         }

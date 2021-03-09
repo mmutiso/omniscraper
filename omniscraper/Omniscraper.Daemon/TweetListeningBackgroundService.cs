@@ -38,7 +38,7 @@ namespace Omniscraper.Daemon
                         settings.StreamListeningKeyword
                     };
 
-                IQueryable<Streaming> twitterStream = omniContext.CreateStream(keywords, stoppingToken);
+                IQueryable<Streaming> twitterStream = await omniContext.CreateStreamAsync(keywords, stoppingToken);
                 logger.LogInformation("Passed stream creation");
                 Task streamTask = twitterStream.StartAsync((content) => Task.Factory.StartNew(async () =>
                 {

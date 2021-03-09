@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Omniscraper.Core.TwitterScraper.Entities;
+using System.Text.Json;
 
 namespace Omniscraper.Core.TwitterScraper
 {
@@ -17,11 +17,12 @@ namespace Omniscraper.Core.TwitterScraper
             context = scraperContext;
         }
 
-        public async Task<RawTweet> FindByIdAsync(long id)
+        public async Task<RawTweetv2> FindByIdAsync(string id)
         {
             var tweet = await context.GetTweetByIdAsync(id);
-            string tweetStr = JsonConvert.SerializeObject(tweet);
-            var rawTweet = JsonConvert.DeserializeObject<RawTweet>(tweetStr);
+            string tweetStr = JsonSerializer.Serialize(tweet);
+            var rawTweet = JsonSerializer.Deserialize<RawTweetv2>(tweetStr);
+
             return rawTweet;
         }
 

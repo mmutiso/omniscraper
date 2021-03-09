@@ -32,13 +32,13 @@ namespace Omniscraper.Core.TwitterScraper
             return content;
         }
 
-        public static ContentRequestNotification CreateRequestNotification(this RawTweet rawTweet)
+        public static ContentRequestNotification CreateRequestNotification(this RawTweetv2 rawTweet)
         {
             var requestNotification = new ContentRequestNotification
             {
-                IdOfRequestingTweet = rawTweet.id,
-                IdOfTweetBeingRepliedTo = rawTweet.in_reply_to_status_id,
-                RequestedBy = rawTweet.user.screen_name
+                IdOfRequestingTweet = long.Parse(rawTweet.Id),
+                IdOfTweetBeingRepliedTo = long.Parse(rawTweet.InReplyToStatusId),
+                RequestedBy = rawTweet.AuthorScreenName
             };
 
             return requestNotification;

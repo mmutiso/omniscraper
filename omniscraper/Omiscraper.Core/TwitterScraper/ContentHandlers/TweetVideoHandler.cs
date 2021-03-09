@@ -27,7 +27,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 
         public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
         {
-            RawTweet videoTweet = await twitterRepository.FindByIdAsync(notification.IdOfTweetBeingRepliedTo.Value);
+            RawTweetv2 videoTweet = await twitterRepository.FindByIdAsync(notification.IdOfTweetBeingRepliedTo.Value.ToString());
             TweetNotification tweetNotification = new TweetNotification(videoTweet, notification.IdOfRequestingTweet, notification.RequestedBy);
 
             if (tweetNotification.HasVideo())
@@ -43,7 +43,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             }
             else
             {
-                logger.LogWarning($"The tweet being responded to didn't have a video -> {tweetNotification.TweetWithVideo.id}");
+                logger.LogWarning($"The tweet being responded to didn't have a video -> {tweetNotification.TweetWithVideo.Id}");
                 await base.HandleAsync(notification, logger);
             }            
         }

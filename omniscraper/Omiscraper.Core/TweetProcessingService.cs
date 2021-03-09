@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Omniscraper.Core.TwitterScraper.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,7 +31,7 @@ namespace Omniscraper.Core
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             //deserialize tweet.
-            RawTweet requestingTweet = DeserializeTweet(tweetJsonString);
+            RawTweetv2 requestingTweet = DeserializeTweet(tweetJsonString);
 
             ITweetContentHandler handler = handlerFactory.BuildHandlerPipeline();
             var requestNotification = requestingTweet.CreateRequestNotification();
@@ -39,9 +39,9 @@ namespace Omniscraper.Core
             await handler.HandleAsync(requestNotification, logger);
         }       
 
-        private RawTweet DeserializeTweet(string tweetJsonString)
+        private RawTweetv2 DeserializeTweet(string tweetJsonString)
         {
-            var tweet = JsonConvert.DeserializeObject<RawTweet>(tweetJsonString);
+            var tweet = JsonSerializer.Deserialize<RawTweetv2>(tweetJsonString);
 
             return tweet;
         }
