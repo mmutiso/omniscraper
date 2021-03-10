@@ -10,7 +10,6 @@ namespace Omniscraper.Core.Storage
     {
         public Guid Id { get; set; }
         public DateTime DateProcessedUtc { get; set; }
-        public bool Fulfilled { get; set; }
         /// <summary>
         /// This is the @screen_name in Twitter. We will use it when responding to the user.
         /// </summary>
@@ -21,11 +20,10 @@ namespace Omniscraper.Core.Storage
 
         public TwitterVideo TwitterVideo { get; set; }
 
-        public TwitterVideoRequest(bool fulfilled, long requestingTweetId, Guid videoId, string requestor)
+        public TwitterVideoRequest(long requestingTweetId, Guid videoId, string requestor)
         {
             Id = Guid.NewGuid();
             DateProcessedUtc = DateTime.UtcNow;
-            Fulfilled = fulfilled;
             RequestedBy = requestor;
             RequestingTweetId = requestingTweetId;
             TwitterVideoId = videoId;

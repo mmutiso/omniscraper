@@ -38,8 +38,7 @@ namespace Omniscraper.Core.TwitterScraper
 
         public TwitterVideoRequest GetVideoRequest(Guid videoId)
         {
-            bool fulfilled = HasVideo() ? true : false;
-            var request = new TwitterVideoRequest(fulfilled, RequestingTweetId, videoId, RequestedBy);
+            var request = new TwitterVideoRequest(RequestingTweetId, videoId, RequestedBy);
 
             return request;
         }

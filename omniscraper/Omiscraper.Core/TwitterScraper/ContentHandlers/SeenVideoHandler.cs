@@ -31,7 +31,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             {
                 logger.LogInformation($"This tweet existed {notification.IdOfTweetBeingRepliedTo.Value}.");
 
-                var request = new TwitterVideoRequest(true, notification.IdOfRequestingTweet, twitterVideo.Id, notification.RequestedBy);
+                var request = new TwitterVideoRequest(notification.IdOfRequestingTweet, twitterVideo.Id, notification.RequestedBy);
 
                 await scraperRepository.CaptureTwitterVideoAndRequestAsync(request, twitterVideo);
 
