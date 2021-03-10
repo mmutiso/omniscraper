@@ -11,5 +11,7 @@ namespace Omniscraper.Core.TwitterScraper.Entities
         public long? IdOfTweetBeingRepliedTo { get; set; }
         public long IdOfRequestingTweet { get; set; }
         public string RequestedBy { get; set; }
+
+
     }
 }

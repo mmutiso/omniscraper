@@ -31,12 +31,13 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             {
                 logger.LogInformation($"This tweet existed {notification.IdOfTweetBeingRepliedTo.Value}.");
 
-                var mutatedVideo = twitterVideo.CreateForNewTweet(notification.IdOfRequestingTweet, notification.RequestedBy);
-                await scraperRepository.SaveTwitterVideoAsync(mutatedVideo);
+                var request = new TwitterVideoRequest(true, notification.IdOfRequestingTweet, twitterVideo.Id, notification.RequestedBy);
 
-                string response = mutatedVideo.GetResponseContent(settings.BaseUrl);
+                await scraperRepository.CaptureTwitterVideoAndRequestAsync(request, twitterVideo);
+
+                string response = twitterVideo.GetResponseContent(settings.BaseUrl, request.RequestedBy);
                 //send back response
-                await twitterRepository.ReplyToTweetAsync(mutatedVideo.RequestingTweetId, response);
+                await twitterRepository.ReplyToTweetAsync(notification.IdOfRequestingTweet, response);
                 return;
             }
             else

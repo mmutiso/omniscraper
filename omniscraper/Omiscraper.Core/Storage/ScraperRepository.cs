@@ -25,8 +25,7 @@ namespace Omniscraper.Core.Storage
             {
                 video = context.TwitterVideos
                     .Where(x => x.ParentTweetId == tweetId)
-                    .FirstOrDefault(); // There could be multiple
-
+                    .FirstOrDefault(); 
             }
             return exists;
         }
@@ -38,10 +37,13 @@ namespace Omniscraper.Core.Storage
             return video;
         }
 
-        public async Task SaveTwitterVideoAsync(TwitterVideo twitterVideo)
+        public async Task CaptureTwitterVideoAndRequestAsync(TwitterVideoRequest request, TwitterVideo twitterVideo)
         {
-            context.Add<TwitterVideo>(twitterVideo);
+            context.Add(twitterVideo);
+            context.Add(request);
             await context.SaveChangesAsync();
         }
+
+      
     }
 }

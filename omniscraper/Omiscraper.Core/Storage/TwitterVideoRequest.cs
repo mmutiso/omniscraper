@@ -21,5 +21,20 @@ namespace Omniscraper.Core.Storage
 
         public TwitterVideo TwitterVideo { get; set; }
 
+        public TwitterVideoRequest(bool fulfilled, long requestingTweetId, Guid videoId, string requestor)
+        {
+            Id = Guid.NewGuid();
+            DateProcessedUtc = DateTime.UtcNow;
+            Fulfilled = fulfilled;
+            RequestedBy = requestor;
+            RequestingTweetId = requestingTweetId;
+            TwitterVideoId = videoId;
+        }
+
+        public TwitterVideoRequest()
+        {
+
+        }
+
     }
 }
