@@ -20,10 +20,6 @@ namespace Omniscraper.Core.Infrastructure
         
         public EnvironmentVariablesKeysLoader(ILogger<EnvironmentVariablesKeysLoader> logger)
         {
-            foreach (var variable in Environment.GetEnvironmentVariables())
-            {
-                Console.WriteLine($"spitting out: {JsonSerializer.Serialize(variable)}");
-            }
             this.logger = logger;
         }
         private string GetValue(string key)

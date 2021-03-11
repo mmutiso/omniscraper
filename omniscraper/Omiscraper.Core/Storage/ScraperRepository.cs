@@ -44,6 +44,10 @@ namespace Omniscraper.Core.Storage
             await context.SaveChangesAsync();
         }
 
-      
+        public async Task CaptureTwitterRequestAsync(TwitterVideoRequest request)
+        {
+            context.Add(request);
+            await context.SaveChangesAsync();
+        }
     }
 }

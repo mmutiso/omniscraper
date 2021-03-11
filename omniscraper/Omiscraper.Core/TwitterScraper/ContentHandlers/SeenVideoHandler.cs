@@ -33,7 +33,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 
                 var request = new TwitterVideoRequest(notification.IdOfRequestingTweet, twitterVideo.Id, notification.RequestedBy);
 
-                await scraperRepository.CaptureTwitterVideoAndRequestAsync(request, twitterVideo);
+                await scraperRepository.CaptureTwitterRequestAsync(request);
 
                 string response = twitterVideo.GetResponseContent(settings.BaseUrl, request.RequestedBy);
                 //send back response
