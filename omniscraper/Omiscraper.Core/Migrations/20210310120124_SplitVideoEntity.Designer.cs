@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Omniscraper.Core.Storage;
@@ -9,9 +10,10 @@ using Omniscraper.Core.Storage;
 namespace Omniscraper.Core.Migrations
 {
     [DbContext(typeof(OmniscraperDbContext))]
-    partial class OmniscraperDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210310120124_SplitVideoEntity")]
+    partial class SplitVideoEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,12 +81,12 @@ namespace Omniscraper.Core.Migrations
                         .HasColumnName("twitter_video_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_twitter_video_requests");
+                        .HasName("pk_twitter_video_request");
 
                     b.HasIndex("TwitterVideoId")
-                        .HasDatabaseName("ix_twitter_video_requests_twitter_video_id");
+                        .HasDatabaseName("ix_twitter_video_request_twitter_video_id");
 
-                    b.ToTable("twitter_video_requests");
+                    b.ToTable("twitter_video_request");
                 });
 
             modelBuilder.Entity("Omniscraper.Core.Storage.TwitterVideoRequest", b =>
@@ -92,7 +94,7 @@ namespace Omniscraper.Core.Migrations
                     b.HasOne("Omniscraper.Core.Storage.TwitterVideo", "TwitterVideo")
                         .WithMany("TwitterVideoRequests")
                         .HasForeignKey("TwitterVideoId")
-                        .HasConstraintName("fk_twitter_video_requests_twitter_videos_twitter_video_id");
+                        .HasConstraintName("fk_twitter_video_request_twitter_videos_twitter_video_id");
 
                     b.Navigation("TwitterVideo");
                 });

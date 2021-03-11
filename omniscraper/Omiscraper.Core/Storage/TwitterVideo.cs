@@ -15,7 +15,7 @@ namespace Omniscraper.Core.Storage
         public string Url { get; set; }
         public long ParentTweetId { get; set; }
 
-        public ICollection<TwitterVideoRequest> TwitterVideoRequests { get; set; }
+        public List<TwitterVideoRequest> TwitterVideoRequests { get; set; }
 
         public TwitterVideo()
         {

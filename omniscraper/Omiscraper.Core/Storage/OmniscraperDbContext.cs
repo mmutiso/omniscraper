@@ -30,6 +30,13 @@ namespace Omniscraper.Core.Storage
                 options.HasIndex(x => x.Slug).IsUnique();
                 options.HasIndex(x => x.ParentTweetId);
             });
+
+            builder.Entity<TwitterVideoRequest>(options =>
+            {
+                options.ToTable("twitter_video_requests");
+                options.HasOne(x => x.TwitterVideo)
+                .WithMany(x => x.TwitterVideoRequests);
+            });
         }
     }
 }
