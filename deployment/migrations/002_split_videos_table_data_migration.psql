@@ -29,12 +29,13 @@ group by tweet_with_video_id
  inner join public.twitter_videos_copy v
  on v.requesting_tweet_id = t.requesting_tweet_id
 ----------------------------------------------------------
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 insert into public.twitter_video_requests
-select gen_random_uuid(),vc.date_processed_utc,vc.requested_by,vc.requesting_tweet_id, v.id video_id
+select uuid_generate_v1(),vc.date_processed_utc,vc.requested_by,vc.requesting_tweet_id, v.id video_id
 from public.twitter_videos_copy vc
 inner join public.twitter_videos v 
 on v.parent_tweet_id = vc.tweet_with_video_id
 ----------------------------------------------------------
 select * from public.twitter_video_requests
-select * from public.twitter_video
+select * from public.twitter_videos
 ----------------------------------------------------------

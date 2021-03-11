@@ -1,0 +1,47 @@
+START TRANSACTION;
+
+ALTER TABLE twitter_videos DROP COLUMN requested_by;
+
+ALTER TABLE twitter_videos DROP COLUMN requesting_tweet_id;
+
+ALTER TABLE twitter_videos RENAME COLUMN tweet_with_video_id TO parent_tweet_id;
+
+ALTER TABLE twitter_videos RENAME COLUMN date_processed_utc TO date_saved_utc;
+
+ALTER INDEX ix_twitter_videos_tweet_with_video_id RENAME TO ix_twitter_videos_parent_tweet_id;
+
+CREATE TABLE twitter_video_request (
+    id uuid NOT NULL,
+    date_processed_utc timestamp without time zone NOT NULL,
+    requested_by text NULL,
+    requesting_tweet_id bigint NOT NULL,
+    twitter_video_id uuid NULL,
+    CONSTRAINT pk_twitter_video_request PRIMARY KEY (id),
+    CONSTRAINT fk_twitter_video_request_twitter_videos_twitter_video_id FOREIGN KEY (twitter_video_id) REFERENCES twitter_videos (id) ON DELETE RESTRICT
+);
+
+CREATE INDEX ix_twitter_video_request_twitter_video_id ON twitter_video_request (twitter_video_id);
+
+INSERT INTO "__EFMigrationsHistory" (migration_id, product_version)
+VALUES ('20210310120124_SplitVideoEntity', '5.0.2');
+
+COMMIT;
+
+START TRANSACTION;
+
+ALTER TABLE twitter_video_request DROP CONSTRAINT fk_twitter_video_request_twitter_videos_twitter_video_id;
+
+ALTER TABLE twitter_video_request DROP CONSTRAINT pk_twitter_video_request;
+
+ALTER TABLE twitter_video_request RENAME TO twitter_video_requests;
+
+ALTER INDEX ix_twitter_video_request_twitter_video_id RENAME TO ix_twitter_video_requests_twitter_video_id;
+
+ALTER TABLE twitter_video_requests ADD CONSTRAINT pk_twitter_video_requests PRIMARY KEY (id);
+
+ALTER TABLE twitter_video_requests ADD CONSTRAINT fk_twitter_video_requests_twitter_videos_twitter_video_id FOREIGN KEY (twitter_video_id) REFERENCES twitter_videos (id) ON DELETE RESTRICT;
+
+INSERT INTO "__EFMigrationsHistory" (migration_id, product_version)
+VALUES ('20210310122317_CreateRelationships', '5.0.2');
+
+COMMIT;
