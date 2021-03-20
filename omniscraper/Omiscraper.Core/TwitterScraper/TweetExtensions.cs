@@ -32,6 +32,14 @@ namespace Omniscraper.Core.TwitterScraper
             return content;
         }
 
+        public static string GetThreadResponse(this TwitterThread thread, string baseUrl, string requestor)
+        {
+            string linkUrl = $"{baseUrl}/threads/{thread.Slug}";
+            string content = $"@{requestor} Read the thread here {linkUrl}";
+
+            return content;
+        }
+
         public static ContentRequestNotification CreateRequestNotification(this RawTweet rawTweet)
         {
             var requestNotification = new ContentRequestNotification
@@ -42,6 +50,32 @@ namespace Omniscraper.Core.TwitterScraper
             };
 
             return requestNotification;
+        }
+
+        public static TwitterThread CreateThreadFromConversation(this TwitterConversation conversation)
+        {
+            Guid id = Guid.NewGuid();
+            var thread = new TwitterThread
+            {
+                Id = id,
+                ConversationId = conversation.ConversationId,
+                Slug = id.ToString().Split("-")[0],
+                AuthorDisplayName = conversation.AuthorDisplayName,
+                AuthorProfilePictureLink = conversation.AuthorProfilePictureLink,
+                AuthorTwitterUsername = conversation.AuthorTwitterUsername,
+                Tweets = new List<Storage.TweetContent>(conversation.Tweets.Count)
+            };
+
+            conversation.Tweets.ForEach(tweet =>
+            {
+                thread.Tweets.Add(new Storage.TweetContent
+                {
+                    Id = tweet.Id,
+                    Text = tweet.Text
+                });
+            });
+
+            return thread;
         }
     }
 }

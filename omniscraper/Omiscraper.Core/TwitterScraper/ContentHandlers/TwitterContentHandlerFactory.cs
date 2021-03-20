@@ -12,15 +12,13 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
     public class TwitterContentHandlerFactory
     {
-        ILogger<TwitterContentHandlerFactory> logger;
         ITwitterRepository twitterRepository;
         IScraperRepository scraperDatabaseRepository;
         IOptions<TweetProcessorSettings> options;
 
         public TwitterContentHandlerFactory(ITwitterRepository twitterRepository, IScraperRepository scraperRepository, 
-            ILogger<TwitterContentHandlerFactory> logger, IOptions<TweetProcessorSettings> options)
+             IOptions<TweetProcessorSettings> options)
         {
-            this.logger = logger;
             this.twitterRepository = twitterRepository;
             scraperDatabaseRepository = scraperRepository;
             this.options = options;
@@ -32,6 +30,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             ITweetContentHandler notAReplyHandler = new NotAReplyHandler();
             ITweetContentHandler seenVideoHandler = new SeenVideoHandler(scraperDatabaseRepository, options, twitterRepository);
             ITweetContentHandler videoHandler = new TweetVideoHandler(scraperDatabaseRepository, twitterRepository, options);
+
 
             selfTweetHandler
                 .SetNext(notAReplyHandler)

@@ -49,5 +49,10 @@ namespace Omniscraper.Core.Storage
             context.Add(request);
             await context.SaveChangesAsync();
         }
+
+        public Task SaveThreadAsync(TwitterThread twitterThread)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

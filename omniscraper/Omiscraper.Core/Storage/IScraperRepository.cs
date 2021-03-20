@@ -13,5 +13,6 @@ namespace Omniscraper.Core.Storage
         public Task<TwitterVideo> GetTwitterVideoAsync(Guid id);
 
         public bool GetIfVideoExists(long tweetId, out TwitterVideo video);
+        public Task SaveThreadAsync(TwitterThread twitterThread);
     }
 }
