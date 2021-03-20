@@ -45,6 +45,14 @@ namespace Omniscraper.Core.Storage
                 options.HasOne(x => x.TwitterThread)
                 .WithMany(x => x.ThreadRequests);
             });
+
+            builder.Entity<TwitterThread>(options =>
+            {
+                options.ToTable("twitter_threads");
+                options.HasIndex(x => x.Slug).IsUnique();
+                options.HasIndex(x => x.ConversationId);
+                options.Property(x => x.Tweets).HasColumnType("jsonb");
+            });
         }
     }
 }

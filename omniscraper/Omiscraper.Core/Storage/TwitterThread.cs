@@ -23,5 +23,6 @@ namespace Omniscraper.Core.Storage
     {
         public long Id { get; set; }
         public string Text { get; set; }
+        public Dictionary<string, string> Properties { get; set; }
     }
 }
