@@ -95,19 +95,7 @@ namespace Omniscraper.Core.TwitterScraper
             return videoLinks;
         }
 
-        /// <summary>
-        /// The logic for inferring intent will all come here. In the mean time everything 
-        /// will default to video. However in the future the priority will be given to determining if
-        /// intent is on a thread since it might have some tweets with videos.
-        /// </summary>
-        /// <returns></returns>
-        public TwitterContentType GetContentType()
-        {
-            if (HasVideo())
-                return TwitterContentType.Video;
-            else
-                return TwitterContentType.Undefined;                
-        }
+       
 
         public string GetVideoUrl()
         {

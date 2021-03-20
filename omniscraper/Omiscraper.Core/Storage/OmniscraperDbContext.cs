@@ -36,6 +36,14 @@ namespace Omniscraper.Core.Storage
                 options.ToTable("twitter_video_requests");
                 options.HasOne(x => x.TwitterVideo)
                 .WithMany(x => x.TwitterVideoRequests);
+
+            });
+
+            builder.Entity<TwitterThreadRequest>(options =>
+            {
+                options.ToTable("twitter_thread_requests");
+                options.HasOne(x => x.TwitterThread)
+                .WithMany(x => x.ThreadRequests);
             });
         }
     }

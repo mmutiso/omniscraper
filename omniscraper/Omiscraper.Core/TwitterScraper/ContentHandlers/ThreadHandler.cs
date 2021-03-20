@@ -32,25 +32,43 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
                 return;
             }
 
+            TwitterThread thread;
+            bool exists = scraperRepository.GetThreadIfExists(notification.IdOfTweetBeingRepliedTo.Value, out thread);
+
+            if (exists)
+            {
+                var request = new TwitterThreadRequest(notification.IdOfRequestingTweet, thread.Id, notification.RequestedBy);
+                await scraperRepository.SaveAsync(request);
+                logger.LogInformation($"Thread exists. Saving request by tweet id {notification.IdOfRequestingTweet}");
+                await SendResponse(thread, notification, logger);
+                return;
+            }
+
             RawTweet tweetBeingRepliedTo = await twitterRepository.FindByIdAsync(notification.IdOfTweetBeingRepliedTo.Value);
 
             BuildConversationResult result = await conversationBuilder.BuildAsync(tweetBeingRepliedTo.user.id, tweetBeingRepliedTo.id);
 
             if (result.Success)
-            {
-                var thread = result.TwitterConversation.CreateThreadFromConversation();
-                string response = thread.GetThreadResponse(settings.BaseUrl, notification.RequestedBy);
-                await scraperRepository.SaveThreadAsync(thread);
-                logger.LogInformation($"Saved a thread with ID {thread.Id}");
+            {                
+                thread = result.TwitterConversation.CreateThreadFromConversation();
+                var request = new TwitterThreadRequest(notification.IdOfRequestingTweet, thread.Id, notification.RequestedBy);
+                await scraperRepository.SaveAsync(thread, request);
 
+                logger.LogInformation($"Saved a thread with ID {thread.Id} and request");
 
-                await twitterRepository.ReplyToTweetAsync(notification.IdOfRequestingTweet, response);
-                logger.LogInformation($"Send back this response ->{response}");
+                await SendResponse(thread, notification, logger);                
             }
             else
             {
                 logger.LogWarning($"This was not a thread. Stopping further processing. Requesting tweet Id {notification.IdOfRequestingTweet}");
             }
+        }
+
+        async Task SendResponse<T>(TwitterThread thread, ContentRequestNotification notification, ILogger<T> logger)
+        {
+            string response = thread.GetThreadResponse(settings.BaseUrl, notification.RequestedBy);
+            await twitterRepository.ReplyToTweetAsync(notification.IdOfTweetBeingRepliedTo.Value, response);
+            logger.LogInformation($"Send back this response ->{response}");
         }
     }
 }

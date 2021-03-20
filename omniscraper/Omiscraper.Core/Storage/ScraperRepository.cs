@@ -50,7 +50,18 @@ namespace Omniscraper.Core.Storage
             await context.SaveChangesAsync();
         }
 
-        public Task SaveThreadAsync(TwitterThread twitterThread)
+
+        public Task SaveAsync<T>(T entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SaveAsync<T, U>(T entity, U anotherEntity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool GetThreadIfExists(long conversationId, out TwitterThread thread)
         {
             throw new NotImplementedException();
         }

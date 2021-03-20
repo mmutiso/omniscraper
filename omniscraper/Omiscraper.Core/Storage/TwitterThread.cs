@@ -15,6 +15,8 @@ namespace Omniscraper.Core.Storage
         public string AuthorTwitterUsername { get; set; }
         public string AuthorProfilePictureLink { get; set; }
         public List<TweetContent> Tweets { get; set; }
+
+        public List<TwitterThreadRequest> ThreadRequests { get; set; }
     }
 
     public record TweetContent
