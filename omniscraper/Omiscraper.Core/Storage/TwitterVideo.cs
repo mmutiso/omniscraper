@@ -14,6 +14,7 @@ namespace Omniscraper.Core.Storage
         public string Slug { get; set; }               
         public string Url { get; set; }
         public long ParentTweetId { get; set; }
+        public bool Flagged { get; set; }
 
         public List<TwitterVideoRequest> TwitterVideoRequests { get; set; }
 
@@ -29,6 +30,7 @@ namespace Omniscraper.Core.Storage
             Slug = id.ToString().Split("-")[0];
             Url = url;
             ParentTweetId = parentTweetId;
+            Flagged = false;
         }       
     }
 }
