@@ -12,7 +12,7 @@ namespace Omniscraper.Core.TwitterScraper.Entities
         public TwitterUrls[] urls { get; set; }
         public UserMention[] user_mentions { get; set; }
         public string[] symbols { get; set; }
-        public TweetMedia[] media { get; set; }
+        public TweetMedia[] MediaEntities { get; set; }
     }
 
     public class Hashtag
@@ -43,13 +43,13 @@ namespace Omniscraper.Core.TwitterScraper.Entities
         public long id { get; set; }
         public string id_str { get; set; }
         public int[] indices { get; set; }
-        public string media_url { get; set; }
-        public string media_url_https { get; set; }
+        public string MediaUrl { get; set; }
+        public string MediaUrlHttps { get; set; }
         public string url { get; set; }
         public string display_url { get; set; }
         public string expanded_url { get; set; }
         public string type { get; set; }
-        public Sizes sizes { get; set; }
+        public Sizes[] sizes { get; set; }
     }
 
     public class Large

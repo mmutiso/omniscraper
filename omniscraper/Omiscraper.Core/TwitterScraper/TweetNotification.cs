@@ -30,7 +30,7 @@ namespace Omniscraper.Core.TwitterScraper
         {
             if (HasVideo())
             {
-                var video = new TwitterVideo(Id, GetVideoUrl(), TweetWithVideo.id);
+                var video = new TwitterVideo(Id, GetVideoUrl(), TweetWithVideo.id, GetVideoThumbNail());
                 return video;
             }
             return null;
@@ -93,6 +93,25 @@ namespace Omniscraper.Core.TwitterScraper
                 }
             }
             return videoLinks;
+        }
+
+        private string GetVideoThumbNail()
+        {
+            var entities = TweetWithVideo.entities;
+            if (entities != null)
+            {
+                var mediaEntities = entities.MediaEntities;
+                if (mediaEntities != null)
+                {
+                    var thumbnail = mediaEntities.Where(x => string.Equals(x.type.ToLower(), "photo")).FirstOrDefault();
+
+                    return thumbnail.MediaUrlHttps;
+                }
+                else
+                    return string.Empty;
+            }
+            else
+                return string.Empty;            
         }
 
         /// <summary>

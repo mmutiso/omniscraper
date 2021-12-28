@@ -14,6 +14,7 @@ namespace Omniscraper.Core.Storage
         public string Slug { get; set; }               
         public string Url { get; set; }
         public long ParentTweetId { get; set; }
+        public string VideoThumbnailLinkHttps { get; set; }
 
         public List<TwitterVideoRequest> TwitterVideoRequests { get; set; }
 
@@ -22,13 +23,14 @@ namespace Omniscraper.Core.Storage
 
         }
 
-        public TwitterVideo(Guid id, string url, long parentTweetId)
+        public TwitterVideo(Guid id, string url, long parentTweetId, string videoThumbnailLink = "")
         {
             Id = id;
             DateSavedUTC = DateTime.UtcNow;
             Slug = id.ToString().Split("-")[0];
             Url = url;
             ParentTweetId = parentTweetId;
+            VideoThumbnailLinkHttps = videoThumbnailLink;
         }       
     }
 }
