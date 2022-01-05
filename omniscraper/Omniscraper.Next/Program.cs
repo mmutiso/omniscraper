@@ -64,8 +64,8 @@ namespace Omniscraper.Next
         {
             var result = await 
                 (from t in twitterContext.Tweets
-                 where t.Ids == "1367852145031208965" &&
-                 t.TweetFields == "conversation_id" &&                
+                 where t.Ids == "1478241311392108545" &&
+                 t.TweetFields == "conversation_id,author_id" &&                
                  t.Type == TweetType.Lookup
                  select t)
                  .SingleOrDefaultAsync();
@@ -74,7 +74,7 @@ namespace Omniscraper.Next
                 result.Tweets.ForEach(tweet =>
                     Console.WriteLine(
                         "\n  User: {0}, Conversation ID {1}, Tweet: {2}",
-                        tweet.ID,
+                        tweet.AuthorID,
                         tweet.ConversationID,
                         tweet.Text));
             else
@@ -85,6 +85,8 @@ namespace Omniscraper.Next
         /// <summary>
         /// 2 or more tweets qualify to be a thread
         /// https://help.twitter.com/en/using-twitter/create-a-thread
+        /// 
+        /// This will not have the first tweet that started the conversation, seems like we might have to get from elsewhere.
         /// </summary>
         /// <param name="tweets"></param>
         /// <param name="authorId"></param>
@@ -112,9 +114,19 @@ namespace Omniscraper.Next
             });            
         }
 
+
+        /// <summary>
+        /// Follow this documentation to help with query construction
+        /// https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query
+        /// </summary>
+        /// <param name="twitterCtx"></param>
+        /// <returns></returns>
+
         static async Task DoSearchAsync(TwitterContext twitterCtx)
         {
-            string searchTerm = "conversation_id:1368919791847800838";
+
+            //https://twitter.com/LBacaj/status/1478241311392108545
+            string searchTerm = "conversation_id:1478241311392108545 (from:38566144)";
 
             TwitterSearch? searchResponse =
                 await
@@ -131,7 +143,7 @@ namespace Omniscraper.Next
             Console.WriteLine("-=================================-");
             if (searchResponse?.Tweets != null)
             {
-                await ParseThread(searchResponse.Tweets, "1067927682023915521", "1368919791847800838");
+                await ParseThread(searchResponse.Tweets, "38566144", "1478241311392108545");
             }
             else
                 Console.WriteLine("No entries found.");
