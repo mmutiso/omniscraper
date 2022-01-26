@@ -29,6 +29,7 @@ namespace Omniscraper.Core.Storage
                 options.ToTable("twitter_videos");
                 options.HasIndex(x => x.Slug).IsUnique();
                 options.HasIndex(x => x.ParentTweetId);
+                options.Property(x => x.Text).HasMaxLength(290);
             });
 
             builder.Entity<TwitterVideoRequest>(options =>

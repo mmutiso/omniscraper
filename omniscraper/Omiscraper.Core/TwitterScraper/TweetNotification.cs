@@ -30,10 +30,18 @@ namespace Omniscraper.Core.TwitterScraper
         {
             if (HasVideo())
             {
-                var video = new TwitterVideo(Id, GetVideoUrl(), TweetWithVideo.id, GetVideoThumbNail());
+                var video = new TwitterVideo(Id, GetVideoUrl(), TweetWithVideo.id, GetVideoThumbNail(), GetTweetText());
                 return video;
             }
             return null;
+        }
+
+        private string GetTweetText()
+        {
+            if (TweetWithVideo.extended_tweet != null)
+                return TweetWithVideo.extended_tweet.full_text;
+
+            return TweetWithVideo.FullText;
         }
 
         public TwitterVideoRequest GetVideoRequest(Guid videoId)
