@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Omniscraper.Core.TwitterScraper.Entities
 {
@@ -49,6 +50,8 @@ namespace Omniscraper.Core.TwitterScraper.Entities
         public string display_url { get; set; }
         public string expanded_url { get; set; }
         public string type { get; set; }
+
+        [JsonIgnore]
         public Sizes[] sizes { get; set; }
     }
 

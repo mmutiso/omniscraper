@@ -280,8 +280,8 @@ namespace Omniscraper.Next
         {
             await Task.CompletedTask;
 
-            ILoadApplicationCredentials credentialsLoader = new EnvironmentVariablesKeysLoader(default);
-            TwitterKeys keys = credentialsLoader.Load();
+            ILoadApplicationKeys credentialsLoader = new EnvironmentVariablesKeysLoader(default);
+            TwitterKeys keys = credentialsLoader.LoadTwitterKeys();
             return keys;
         }
     }

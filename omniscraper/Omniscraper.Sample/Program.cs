@@ -45,8 +45,8 @@ namespace Omniscraper.Sample
         {
             await Task.CompletedTask;
 
-            ILoadApplicationCredentials credentialsLoader = new EnvironmentVariablesKeysLoader(default);
-            TwitterKeys keys = credentialsLoader.Load();
+            ILoadApplicationKeys credentialsLoader = new EnvironmentVariablesKeysLoader(default);
+            TwitterKeys keys = credentialsLoader.LoadTwitterKeys();
             return keys;
         }
 
@@ -73,8 +73,8 @@ namespace Omniscraper.Sample
 
             static async Task StreamMain()
             {
-                ILoadApplicationCredentials credentialsLoader = new EnvironmentVariablesKeysLoader(default);
-                TwitterKeys keys = credentialsLoader.Load();
+                ILoadApplicationKeys credentialsLoader = new EnvironmentVariablesKeysLoader(default);
+                TwitterKeys keys = credentialsLoader.LoadTwitterKeys();
 
                 OmniScraperContext context = new OmniScraperContext(keys);
                 ITwitterRepository twitterRepository = new LinqToTwitterRepository(context);

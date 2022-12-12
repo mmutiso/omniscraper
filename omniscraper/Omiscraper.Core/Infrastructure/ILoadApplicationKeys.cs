@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Omniscraper.Core.Infrastructure
 {
-    public interface ILoadApplicationCredentials
+    public interface ILoadApplicationKeys
     {
-        TwitterKeys Load();
+        TwitterKeys LoadTwitterKeys();
+
+        string LoadByKeyName(string key);
     }
 }

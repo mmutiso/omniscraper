@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace Omniscraper.Core.Infrastructure
 {
-    public class EnvironmentVariablesKeysLoader : ILoadApplicationCredentials
+    public class EnvironmentVariablesKeysLoader : ILoadApplicationKeys
     {
         private const string ConsumerKeyName = "OMNISCRAPER_CONSUMERKEY";
         private const string ConsumerSecretName = "OMNISCRAPER_CONSUMERSECRET";
@@ -31,7 +31,7 @@ namespace Omniscraper.Core.Infrastructure
             return envValue;
         }
 
-        public TwitterKeys Load()
+        public TwitterKeys LoadTwitterKeys()
         {
             var keys = new TwitterKeys
             {
@@ -42,6 +42,11 @@ namespace Omniscraper.Core.Infrastructure
             };
 
             return keys;
+        }
+
+        public string LoadByKeyName(string key)
+        {
+            throw new NotImplementedException();
         }
     }
 }

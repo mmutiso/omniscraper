@@ -12,6 +12,9 @@ using Omniscraper.Core.Storage;
 using Omniscraper.Core.TwitterScraper;
 using Microsoft.EntityFrameworkCore;
 using Omniscraper.Core.TwitterScraper.ContentHandlers;
+using Azure.Security.KeyVault.Secrets;
+using Azure.Core;
+using Azure.Identity;
 
 namespace Omniscraper.Daemon
 {
@@ -27,7 +30,6 @@ namespace Omniscraper.Daemon
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
                 config.AddJsonFile("appsettings.json", false);
-
             })
             .ConfigureLogging((context, builder) =>
             {
@@ -46,31 +48,67 @@ namespace Omniscraper.Daemon
 
             }).ConfigureServices(ConfigureServices);
 
-        static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+        static string GetEnvironmentKey(string key)
         {
-            services.AddScoped<ILoadApplicationCredentials, EnvironmentVariablesKeysLoader>();
+            string envValue = Environment.GetEnvironmentVariable(key);
+            if (string.IsNullOrEmpty(envValue))
+                Console.WriteLine($"No value found for Variable: {key} ");
 
-            TwitterKeys keys = services.BuildServiceProvider()
-                    .GetRequiredService<ILoadApplicationCredentials>()
-                    .Load();
-
-            services.AddSingleton(keys);
-            services.AddScoped<OmniScraperContext>();
-            services.AddScoped<ITwitterRepository, LinqToTwitterRepository>();
-            services.AddScoped<TweetProcessingService>();
-            services.Configure<TweetProcessorSettings>(context.Configuration.GetSection("TweetProcessorSettings"));
-            services.AddDbContext<OmniscraperDbContext>((options) =>
-            {
-                options.UseNpgsql(context.Configuration.GetConnectionString("Postgres"));
-                options.UseSnakeCaseNamingConvention();
-            });
-            services.AddScoped<IScraperRepository, ScraperRepository>();
-
-            services.AddHostedService<TweetListeningBackgroundService>();
-            services.AddLogging();
-
-            services.AddScoped<TwitterContentHandlerFactory>();
+            return envValue;
         }
 
+        static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+        {
+            services.AddLogging();
+            SecretClientOptions secretClientOptions = new SecretClientOptions
+            {
+                Retry =
+                {
+                    Delay = TimeSpan.FromSeconds(2),
+                    MaxDelay = TimeSpan.FromSeconds(16),
+                    MaxRetries = 5,
+                    Mode = RetryMode.Exponential
+                }
+            };
+            services.AddSingleton<SecretClient>(options => {
+
+                string keyVaultUrlName = context.Configuration["KeyVault:UrlEnvironmentVariableName"];
+                string keyVaultUrl = GetEnvironmentKey(keyVaultUrlName);
+                return new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential(), secretClientOptions);
+            });
+
+            services.AddSingleton<ILoadApplicationKeys, AzureKeyVaultKeysLoader>();
+
+            TwitterKeys keys = services.BuildServiceProvider()
+                    .GetRequiredService<ILoadApplicationKeys>()
+                    .LoadTwitterKeys();
+
+            services.AddSingleton(keys);
+            services.AddSingleton<OmniScraperContext>();
+            services.AddSingleton<ITwitterRepository, LinqToTwitterRepository>();
+            services.AddSingleton<TweetProcessingService>();
+            services.Configure<TweetProcessorSettings>(context.Configuration.GetSection("TweetProcessorSettings"));
+            services.AddDbContextFactory<OmniscraperDbContext>(options =>
+            {
+                string connectionStringKeyName = "dev-postres-connection-string";
+                var logger  = services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
+                logger.LogInformation($"Hosting environment: {context.HostingEnvironment.EnvironmentName}");
+                if (!context.HostingEnvironment.IsDevelopment())
+                {
+                    connectionStringKeyName = "prod-postres-connection-string";
+                }
+                string connectionString  = services.BuildServiceProvider()
+                            .GetRequiredService<ILoadApplicationKeys>()
+                            .LoadByKeyName(connectionStringKeyName);
+
+                options.UseNpgsql(connectionString);
+                options.UseSnakeCaseNamingConvention();
+            });
+
+            services.AddSingleton<IScraperRepository, ScraperRepository>();
+
+            services.AddHostedService<TweetListeningBackgroundService>();
+            services.AddSingleton<TwitterContentHandlerFactory>();
+        }
     }
 }

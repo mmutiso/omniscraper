@@ -22,7 +22,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
         {
             await Task.CompletedTask;
 
-            if (notification.RequestedBy.Equals(settings.StreamListeningKeyword, StringComparison.OrdinalIgnoreCase))
+            if (notification.RequestedBy.Equals(settings.StreamListeningKeywords, StringComparison.OrdinalIgnoreCase))
             {
                 logger.LogInformation("This is my tweet. Ignoring");
                 return;

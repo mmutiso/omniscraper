@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Omniscraper.Core.Infrastructure;
 using Omniscraper.Core;
 using LinqToTwitter;
+using Microsoft.EntityFrameworkCore;
+using Omniscraper.Core.Storage;
 
 namespace Omniscraper.Daemon
 {
@@ -19,23 +21,38 @@ namespace Omniscraper.Daemon
         OmniScraperContext omniContext;
         TweetProcessingService tweetProcessingService;
         TweetProcessorSettings settings;
+        IDbContextFactory<OmniscraperDbContext> dbFactory;
 
         public TweetListeningBackgroundService(ILogger<TweetListeningBackgroundService> logger, OmniScraperContext omniScraperContext,
-             TweetProcessingService tweetProcessingService, IOptions<TweetProcessorSettings> options)
+             TweetProcessingService tweetProcessingService, IOptions<TweetProcessorSettings> options,
+             IDbContextFactory<OmniscraperDbContext> factory)
         {
             this.logger = logger;
             omniContext = omniScraperContext;
             this.tweetProcessingService = tweetProcessingService;
             settings = options.Value;
+            dbFactory = factory;
+        }
+
+        async Task TestDb()
+        {
+            await Task.CompletedTask;
+            using var context = dbFactory.CreateDbContext();
+            var tweet = context.TwitterVideos
+            .Where(x => x.ParentTweetId == 1601730985237700610)
+            .Any();
+
+            Console.WriteLine(tweet);
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            logger.LogInformation("Passed service start");
             while (!stoppingToken.IsCancellationRequested)
             {
+                Console.WriteLine($"Cancellation token requested: {stoppingToken.IsCancellationRequested}");
                 List<string> keywords = new List<string>
                     {
-                        //"omniscraper"
-                        settings.StreamListeningKeyword
+                        settings.StreamListeningKeywords
                     };
 
                 IQueryable<Streaming> twitterStream = omniContext.CreateStream(keywords, stoppingToken);
@@ -46,11 +63,14 @@ namespace Omniscraper.Daemon
                     {
                         try
                         {
+                            await TestDb();
                             await tweetProcessingService.ProcessTweetAsync(content.Content);
                         }
                         catch (Exception ex)
                         {
-                            logger.LogError(ex, "An error occurred when processing tweet");
+                            logger.LogError("An exception was thrown when processing tweet. See the error message and tweet below");
+                            logger.LogError(ex.Message);
+                            logger.LogInformation(content.Content);
                         }
                     }
                     else
@@ -59,7 +79,8 @@ namespace Omniscraper.Daemon
                     }
 
                 })); // register the stream handler
-                logger.LogInformation("Passed stream handler registration");
+                logger.LogInformation("The stream exited. Pausing for 10 seconds...");
+                await Task.Delay(TimeSpan.FromSeconds(10));
 
                 Task[] tasks = new[] { streamTask };
 

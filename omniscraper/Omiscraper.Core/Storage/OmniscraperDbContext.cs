@@ -9,7 +9,7 @@ namespace Omniscraper.Core.Storage
 {
     public class OmniscraperDbContext : DbContext
     {
-
+        
         public OmniscraperDbContext(DbContextOptions<OmniscraperDbContext> dbContextOptions)
             :base(dbContextOptions)
         {
