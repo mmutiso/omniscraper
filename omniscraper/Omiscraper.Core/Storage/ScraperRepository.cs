@@ -65,7 +65,7 @@ namespace Omniscraper.Core.Storage
 
         async Task SaveAsync(OmniscraperDbContext context)
         {
-            await context.SaveChangesAsync();
+            //await context.SaveChangesAsync();
         }
     }
 }

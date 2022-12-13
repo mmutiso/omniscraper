@@ -33,17 +33,7 @@ namespace Omniscraper.Daemon
             settings = options.Value;
             dbFactory = factory;
         }
-
-        async Task TestDb()
-        {
-            await Task.CompletedTask;
-            using var context = dbFactory.CreateDbContext();
-            var tweet = context.TwitterVideos
-            .Where(x => x.ParentTweetId == 1601730985237700610)
-            .Any();
-
-            Console.WriteLine(tweet);
-        }
+       
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             logger.LogInformation("Passed service start");
@@ -63,7 +53,6 @@ namespace Omniscraper.Daemon
                     {
                         try
                         {
-                            await TestDb();
                             await tweetProcessingService.ProcessTweetAsync(content.Content);
                         }
                         catch (Exception ex)
