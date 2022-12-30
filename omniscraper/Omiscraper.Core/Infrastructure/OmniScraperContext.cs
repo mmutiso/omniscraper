@@ -6,21 +6,26 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using LinqToTwitter;
+using Microsoft.Extensions.Logging;
 
 namespace Omniscraper.Core.Infrastructure
 {
     public class OmniScraperContext
     {
         TwitterContext context;
+        ILogger<OmniScraperContext> _logger;
 
-        public OmniScraperContext(TwitterKeys keys)
+        public OmniScraperContext(TwitterKeys keys, ILogger<OmniScraperContext> logger)
         {
             context = new TwitterContext(ApplicationAuthorizer(keys));
+            _logger = logger;
         }
 
         public IQueryable<Streaming> CreateStream(List<string> keywordsToTrack, CancellationToken cancellationToken)
         {
             string keywords = string.Join(",", keywordsToTrack);
+
+            _logger.LogInformation("Stream keywords: {}", keywordsToTrack);
 
             var stream = from strm in context.Streaming
                          .WithCancellation(cancellationToken)
