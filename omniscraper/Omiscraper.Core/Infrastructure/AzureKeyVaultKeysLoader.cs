@@ -34,7 +34,7 @@ namespace Omniscraper.Core.Infrastructure
             if (keyVaultSecret is null)
                 throw new Exception($"{nameof(keyVaultSecret)} is null");
 
-            _logger.LogInformation($"Reading KeyVault: {key} with value: {keyVaultSecret.Value}");
+            _logger.LogInformation($"Reading KeyVault: {key} with value: {keyVaultSecret.Value.PartialMask()}");
 
             return keyVaultSecret.Value;
         }

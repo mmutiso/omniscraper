@@ -15,6 +15,8 @@ using Omniscraper.Core.TwitterScraper.ContentHandlers;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Core;
 using Azure.Identity;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DependencyCollector;
 
 namespace Omniscraper.Daemon
 {
@@ -60,6 +62,9 @@ namespace Omniscraper.Daemon
         static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
             services.AddLogging();
+            services.AddApplicationInsightsTelemetryWorkerService();
+            services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) => { module.EnableSqlCommandTextInstrumentation = true; });
+
             SecretClientOptions secretClientOptions = new SecretClientOptions
             {
                 Retry =
