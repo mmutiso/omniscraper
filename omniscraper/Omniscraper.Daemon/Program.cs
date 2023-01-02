@@ -106,7 +106,8 @@ namespace Omniscraper.Daemon
                             .GetRequiredService<ILoadApplicationKeys>()
                             .LoadByKeyName(connectionStringKeyName);
 
-                options.UseNpgsql(connectionString);
+                var serverVersion = new MySqlServerVersion(new Version(5, 7));
+                options.UseMySql(connectionString, serverVersion);
                 options.UseSnakeCaseNamingConvention();
             });
 
