@@ -13,8 +13,9 @@ namespace Omniscraper.Core.Storage
         public OmniscraperDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<OmniscraperDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Database=omniscraper;Username=postgres;Password=root123")
-                .UseSnakeCaseNamingConvention();
+            var serverVersion = new MySqlServerVersion(new Version(5,7));
+            optionsBuilder.UseMySql("Server=localhost;UserID=root;Password=root;Database=omniscraper;", serverVersion) 
+            .UseSnakeCaseNamingConvention();
 
             return new OmniscraperDbContext(optionsBuilder.Options);
         }

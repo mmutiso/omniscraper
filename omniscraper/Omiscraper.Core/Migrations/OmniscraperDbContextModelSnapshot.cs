@@ -3,8 +3,9 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Omniscraper.Core.Storage;
+
+#nullable disable
 
 namespace Omniscraper.Core.Migrations
 {
@@ -15,19 +16,18 @@ namespace Omniscraper.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityByDefaultColumns()
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.2");
+                .HasAnnotation("ProductVersion", "6.0.12")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Omniscraper.Core.Storage.TwitterVideo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("char(36)")
                         .HasColumnName("id");
 
                     b.Property<DateTime>("DateSavedUTC")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("date_saved_utc");
 
                     b.Property<long>("ParentTweetId")
@@ -35,20 +35,20 @@ namespace Omniscraper.Core.Migrations
                         .HasColumnName("parent_tweet_id");
 
                     b.Property<string>("Slug")
-                        .HasColumnType("text")
+                        .HasColumnType("varchar(95)")
                         .HasColumnName("slug");
 
                     b.Property<string>("Text")
                         .HasMaxLength(290)
-                        .HasColumnType("character varying(290)")
+                        .HasColumnType("varchar(290)")
                         .HasColumnName("text");
 
                     b.Property<string>("Url")
-                        .HasColumnType("text")
+                        .HasColumnType("longtext")
                         .HasColumnName("url");
 
                     b.Property<string>("VideoThumbnailLinkHttps")
-                        .HasColumnType("text")
+                        .HasColumnType("longtext")
                         .HasColumnName("video_thumbnail_link_https");
 
                     b.HasKey("Id")
@@ -61,22 +61,22 @@ namespace Omniscraper.Core.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_twitter_videos_slug");
 
-                    b.ToTable("twitter_videos");
+                    b.ToTable("twitter_videos", (string)null);
                 });
 
             modelBuilder.Entity("Omniscraper.Core.Storage.TwitterVideoRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("char(36)")
                         .HasColumnName("id");
 
                     b.Property<DateTime>("DateProcessedUtc")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("date_processed_utc");
 
                     b.Property<string>("RequestedBy")
-                        .HasColumnType("text")
+                        .HasColumnType("longtext")
                         .HasColumnName("requested_by");
 
                     b.Property<long>("RequestingTweetId")
@@ -84,7 +84,7 @@ namespace Omniscraper.Core.Migrations
                         .HasColumnName("requesting_tweet_id");
 
                     b.Property<Guid?>("TwitterVideoId")
-                        .HasColumnType("uuid")
+                        .HasColumnType("char(36)")
                         .HasColumnName("twitter_video_id");
 
                     b.HasKey("Id")
@@ -93,7 +93,7 @@ namespace Omniscraper.Core.Migrations
                     b.HasIndex("TwitterVideoId")
                         .HasDatabaseName("ix_twitter_video_requests_twitter_video_id");
 
-                    b.ToTable("twitter_video_requests");
+                    b.ToTable("twitter_video_requests", (string)null);
                 });
 
             modelBuilder.Entity("Omniscraper.Core.Storage.TwitterVideoRequest", b =>
