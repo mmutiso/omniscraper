@@ -11,6 +11,7 @@ using Omniscraper.Core.TwitterScraper;
 using Omniscraper.Core;
 using System.Diagnostics;
 using Omniscraper.Core.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace Omniscraper.Sample
 {
@@ -58,7 +59,7 @@ namespace Omniscraper.Sample
 
         static async Task FetchTweet(long id)
         {
-            var ctx = new OmniScraperContext(await GetKeysAsync());
+            var ctx = new OmniScraperContext(await GetKeysAsync(), default(ILogger<OmniScraperContext>));
             ITwitterRepository twitterRepository = new LinqToTwitterRepository(ctx);
             RawTweet videoTweet = await twitterRepository.FindByIdAsync(id);
             TweetNotification tweetNotification = new TweetNotification(videoTweet, default, default);
@@ -76,7 +77,7 @@ namespace Omniscraper.Sample
                 ILoadApplicationKeys credentialsLoader = new EnvironmentVariablesKeysLoader(default);
                 TwitterKeys keys = credentialsLoader.LoadTwitterKeys();
 
-                OmniScraperContext context = new OmniScraperContext(keys);
+                OmniScraperContext context = new OmniScraperContext(keys, default(ILogger<OmniScraperContext>));
                 ITwitterRepository twitterRepository = new LinqToTwitterRepository(context);
 
                 List<string> keywords = new List<string>

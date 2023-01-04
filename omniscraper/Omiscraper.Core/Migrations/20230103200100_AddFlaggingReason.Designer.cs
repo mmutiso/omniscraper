@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Omniscraper.Core.Storage;
 
@@ -10,9 +11,10 @@ using Omniscraper.Core.Storage;
 namespace Omniscraper.Core.Migrations
 {
     [DbContext(typeof(OmniscraperDbContext))]
-    partial class OmniscraperDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230103200100_AddFlaggingReason")]
+    partial class AddFlaggingReason
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,7 +154,7 @@ namespace Omniscraper.Core.Migrations
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2023, 1, 4, 8, 24, 16, 465, DateTimeKind.Utc).AddTicks(7794))
+                        .HasDefaultValue(new DateTime(2023, 1, 3, 20, 0, 59, 825, DateTimeKind.Utc).AddTicks(3053))
                         .HasColumnName("date_created");
 
                     b.Property<string>("Description")
@@ -193,27 +195,13 @@ namespace Omniscraper.Core.Migrations
                         .HasColumnType("char(36)")
                         .HasColumnName("video_tags_id");
 
-                    b.Property<Guid?>("twittervideo_id")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("twittervideo_id");
-
-                    b.Property<Guid?>("videotag_id")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("videotag_id");
-
                     b.HasKey("TwitterVideosId", "VideoTagsId")
-                        .HasName("pk_twitter_videos_video_tags");
+                        .HasName("pk_twitter_video_video_tag");
 
                     b.HasIndex("VideoTagsId")
-                        .HasDatabaseName("ix_twitter_videos_video_tags_video_tags_id");
+                        .HasDatabaseName("ix_twitter_video_video_tag_video_tags_id");
 
-                    b.HasIndex("twittervideo_id")
-                        .HasDatabaseName("ix_twitter_videos_video_tags_twittervideo_id");
-
-                    b.HasIndex("videotag_id")
-                        .HasDatabaseName("ix_twitter_videos_video_tags_videotag_id");
-
-                    b.ToTable("twitter_videos_video_tags", (string)null);
+                    b.ToTable("twitter_video_video_tag", (string)null);
                 });
 
             modelBuilder.Entity("Omniscraper.Core.Storage.TwitterVideoRequest", b =>
@@ -233,24 +221,14 @@ namespace Omniscraper.Core.Migrations
                         .HasForeignKey("TwitterVideosId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_twitter_videos_video_tags_twitter_videos_twitter_videos_id");
+                        .HasConstraintName("fk_twitter_video_video_tag_twitter_videos_twitter_videos_id");
 
                     b.HasOne("Omniscraper.Core.Storage.VideoTag", null)
                         .WithMany()
                         .HasForeignKey("VideoTagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_twitter_videos_video_tags_video_tag_video_tags_id");
-
-                    b.HasOne("Omniscraper.Core.Storage.TwitterVideo", null)
-                        .WithMany()
-                        .HasForeignKey("twittervideo_id")
-                        .HasConstraintName("fk_twitter_videos_video_tags_twitter_videos_twitter_video_id");
-
-                    b.HasOne("Omniscraper.Core.Storage.VideoTag", null)
-                        .WithMany()
-                        .HasForeignKey("videotag_id")
-                        .HasConstraintName("fk_twitter_videos_video_tags_video_tag_video_tag_id");
+                        .HasConstraintName("fk_twitter_video_video_tag_video_tag_video_tags_id");
                 });
 
             modelBuilder.Entity("Omniscraper.Core.Storage.TwitterVideo", b =>

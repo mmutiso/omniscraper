@@ -14,7 +14,7 @@ namespace Omniscraper.Core.Storage
         {
             var optionsBuilder = new DbContextOptionsBuilder<OmniscraperDbContext>();
             var serverVersion = new MySqlServerVersion(new Version(5,7));
-            optionsBuilder.UseMySql("Server=localhost;UserID=root;Password=root;Database=omniscraper;", serverVersion) 
+            optionsBuilder.UseMySql("<connection string here>;", serverVersion) 
             .UseSnakeCaseNamingConvention();
 
             return new OmniscraperDbContext(optionsBuilder.Options);
