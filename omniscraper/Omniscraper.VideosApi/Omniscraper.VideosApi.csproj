@@ -14,4 +14,8 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Omiscraper.Core\Omiscraper.Core.csproj" />
+  </ItemGroup>
+
 </Project>

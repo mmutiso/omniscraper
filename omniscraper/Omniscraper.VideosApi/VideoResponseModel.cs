@@ -10,6 +10,7 @@
         {
             TweetId = tweetId;
             TwitterPlatformVideoLink = videoLink;
+            FoundVideo = found;
         }
     }
 }
