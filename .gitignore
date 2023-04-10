@@ -10,7 +10,8 @@ omniscraper/Omniscraper.Next/Properties/launchSettings.json
 omniscraper/Omniscraper.VideosApi/Properties/launchSettings.json
 
 omniscraper/Omniscraper.Api/Properties/
-
+omniscraper/Omniscraper.VideosApi/Properties/
+omniscraper/Omniscraper.VideosApi/.config/
 #sqlite
 
 *.db
