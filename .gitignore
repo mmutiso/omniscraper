@@ -7,6 +7,7 @@
 omniscraper/Omniscraper.Sample/Properties/launchSettings.json
 omniscraper/Omniscraper.Daemon/Properties/launchSettings.json
 omniscraper/Omniscraper.Next/Properties/launchSettings.json
+omniscraper/Omniscraper.VideosApi/Properties/launchSettings.json
 
 omniscraper/Omniscraper.Api/Properties/
 

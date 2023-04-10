@@ -19,9 +19,11 @@ namespace Omniscraper.Sample
     {
         static async Task Main(string[] args)
         {
-            await FetchTweet(1366017614800117762);
+            await FetchTweet(1598077590677622785);
+            //await StreamMain();
 
             //await AuthSampleAsync();
+
         }
 
 
@@ -48,8 +50,12 @@ namespace Omniscraper.Sample
 
             ILoadApplicationKeys credentialsLoader = new EnvironmentVariablesKeysLoader(default);
             TwitterKeys keys = credentialsLoader.LoadTwitterKeys();
+            //Testing only consumer key and secret are needed to fetch tweets
+            keys.RemoveAccessTokenAndSecret();
+
             return keys;
         }
+
 
         static async Task TweetSampleAsync()
         {
@@ -59,7 +65,12 @@ namespace Omniscraper.Sample
 
         static async Task FetchTweet(long id)
         {
-            var ctx = new OmniScraperContext(await GetKeysAsync(), default(ILogger<OmniScraperContext>));
+            var factory = LoggerFactory.Create(LogDefineOptions =>
+            {
+
+            });
+            ILogger<OmniScraperContext> logger = factory.CreateLogger<OmniScraperContext>();
+            var ctx = new OmniScraperContext(await GetKeysAsync(), logger);
             ITwitterRepository twitterRepository = new LinqToTwitterRepository(ctx);
             RawTweet videoTweet = await twitterRepository.FindByIdAsync(id);
             TweetNotification tweetNotification = new TweetNotification(videoTweet, default, default);
@@ -70,45 +81,48 @@ namespace Omniscraper.Sample
 
 
                 Console.WriteLine("Done checking for videos");
-            }
+            }            
+        }
 
-            static async Task StreamMain()
+        static async Task StreamMain()
+        {
+            var factory = LoggerFactory.Create(LogDefineOptions =>
             {
-                ILoadApplicationKeys credentialsLoader = new EnvironmentVariablesKeysLoader(default);
-                TwitterKeys keys = credentialsLoader.LoadTwitterKeys();
 
-                OmniScraperContext context = new OmniScraperContext(keys, default(ILogger<OmniScraperContext>));
-                ITwitterRepository twitterRepository = new LinqToTwitterRepository(context);
+            });
+            TwitterKeys keys = await GetKeysAsync();
 
-                List<string> keywords = new List<string>
+            OmniScraperContext context = new OmniScraperContext(keys, factory.CreateLogger<OmniScraperContext>());
+            ITwitterRepository twitterRepository = new LinqToTwitterRepository(context);
+
+            List<string> keywords = new List<string>
             {
                 "omniscraper"
             };
-                CancellationTokenSource tokenSource = new CancellationTokenSource();
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
 
-                IQueryable<Streaming> twitterStream = context.CreateStream(keywords, tokenSource.Token);
+            IQueryable<Streaming> twitterStream = context.CreateStream(keywords, tokenSource.Token);
 
-                Console.WriteLine("Passed stream creation");
+            Console.WriteLine("Passed stream creation");
 
-                Task task = twitterStream.StartAsync((content) => Task.Factory.StartNew(() =>
+            Task task = twitterStream.StartAsync((content) => Task.Factory.StartNew(() =>
+            {
+                Console.WriteLine(content.Content);
+
+                if (content.Content.Length > 2)
                 {
+                    Console.WriteLine();
+
                     Console.WriteLine(content.Content);
+                }
+                else
+                {
+                    Console.WriteLine("Received keep-alive message");
+                }
 
-                    if (content.Content.Length > 2)
-                    {
-                        Console.WriteLine();
-
-                        Console.WriteLine(content.Content);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Received keep-alive message");
-                    }
-
-                })); // register the stream handler
-                Console.WriteLine("Passed stream handler registration");
-                await task;// start the stream    
-            }
+            })); // register the stream handler
+            Console.WriteLine("Passed stream handler registration");
+            await task;// start the stream    
         }
     }
 }

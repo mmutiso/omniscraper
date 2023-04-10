@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30717.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Omiscraper.Core", "Omiscraper.Core\Omiscraper.Core.csproj", "{679D93F5-D96E-447A-B2E0-5EB5F95A2636}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Omniscraper.Next", "Omniscraper.Next\Omniscraper.Next.csproj", "{0F1904B8-F9C7-4A0A-B88C-4E78AC208E18}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Omniscraper.Api", "Omniscraper.Api\Omniscraper.Api.csproj", "{FB6B9B05-B1BD-4C81-9CA6-F98C51DEE61C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Omniscraper.VideosApi", "Omniscraper.VideosApi\Omniscraper.VideosApi.csproj", "{07D71B6F-91FC-4BAD-8395-87F51DDA7681}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{FB6B9B05-B1BD-4C81-9CA6-F98C51DEE61C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB6B9B05-B1BD-4C81-9CA6-F98C51DEE61C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB6B9B05-B1BD-4C81-9CA6-F98C51DEE61C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07D71B6F-91FC-4BAD-8395-87F51DDA7681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07D71B6F-91FC-4BAD-8395-87F51DDA7681}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07D71B6F-91FC-4BAD-8395-87F51DDA7681}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07D71B6F-91FC-4BAD-8395-87F51DDA7681}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
