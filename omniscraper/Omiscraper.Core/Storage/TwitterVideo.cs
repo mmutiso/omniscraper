@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Omniscraper.Core.TwitterScraper;
 
 namespace Omniscraper.Core.Storage
 {
@@ -35,6 +36,13 @@ namespace Omniscraper.Core.Storage
             ParentTweetId = parentTweetId;
             VideoThumbnailLinkHttps = videoThumbnailLink;
             Text = tweetText;
-        }       
+        }
+
+        public static TwitterVideo Create(Guid id, VideoResponseModel model, long parentTweetId)
+        {
+            TwitterVideo twitterVideo = new TwitterVideo(id, model.TwitterPlatformVideoLink,parentTweetId, model.TwitterPlatformThumbnailLink, model.tweetText );
+
+            return twitterVideo;
+        }
     }
 }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using Omniscraper.Core.TwitterScraper.Entities.v2;
 
 namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
@@ -25,15 +26,18 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             this.settings = settings.Value;
         }
 
-        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
+        public override async Task HandleAsync<T>(StreamedTweetContent streamedContent, ILogger<T> logger)
         {
-            RawTweet videoTweet = await twitterRepository.FindByIdAsync(notification.IdOfTweetBeingRepliedTo.Value);
-            TweetNotification tweetNotification = new TweetNotification(videoTweet, notification.IdOfRequestingTweet, notification.RequestedBy);
+            // replace all this implementation to use the video api. 
+            // update video api to provide all other data needed
 
-            if (tweetNotification.HasVideo())
+            VideoResponseModel videoResponseModel = default;
+
+            if (videoResponseModel.FoundVideo)
             {
-                var video = tweetNotification.GetVideo();
-                var request = tweetNotification.GetVideoRequest(video.Id);
+               
+                var request = streamedContent.GenerateVideoRequest();
+                var video = TwitterVideo.Create(request.Id, videoResponseModel, streamedContent.TweetRepliedToId.Value);
 
                 await scraperRepository.CaptureTwitterVideoAndRequestAsync(request, video);
 
@@ -44,8 +48,8 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             }
             else
             {
-                logger.LogWarning($"The tweet being responded to didn't have a video -> {tweetNotification.TweetWithVideo.id}");
-                await base.HandleAsync(notification, logger);
+                logger.LogWarning($"The tweet being responded to didn't have a video -> {streamedContent.TweetRepliedToId}");
+                await base.HandleAsync(streamedContent, logger);
             }            
         }
     }

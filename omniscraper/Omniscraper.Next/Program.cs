@@ -21,14 +21,14 @@ namespace Omniscraper.Next
             await authorizer.AuthorizeAsync();
             var context = new TwitterContext(authorizer);
 
-            //await DeleteRulesAsync(context);
-             //await AddRulesAsync(context);
+          //  await DeleteRulesAsync(context);
+           //  await AddRulesAsync(context);
             //await ValidateRulesAsync(context);
-            //await DoFilterStreamAsync(context);
+            await DoFilterStreamAsync(context);
             //await SingleTweetLookUpAsync(context);
             //await DoSearchAsync(context);
 
-            await TweetAsync();
+            //await TweetAsync();
 
             Console.WriteLine("DONE TESTING");
         }
@@ -59,7 +59,7 @@ namespace Omniscraper.Next
         {
             var rules = new List<StreamingAddRule>
             {
-                new StreamingAddRule { Tag = "some things", Value = "Mombasa" },
+                new StreamingAddRule { Tag = "Match exact phrase Mombasa", Value = "(\"Mombasa\") -\"filtered stream\"" }, //add is reply rule
             };
 
             Streaming? result = await twitterCtx.AddStreamingFilterRulesAsync(rules);
@@ -168,7 +168,7 @@ namespace Omniscraper.Next
         {
             var ruleIds = new List<string>
             {
-                "1639384086513950721"
+                "1645352726224834560"
             };
 
             Streaming? result = await twitterCtx.DeleteStreamingFilterRulesAsync(ruleIds);
@@ -205,13 +205,16 @@ namespace Omniscraper.Next
                     (from strm in twitterCtx.Streaming
                                             .WithCancellation(cancelTokenSrc.Token)
                      where strm.Type == StreamingType.Filter
-                     && strm.TweetFields == "attachments,conversation_id,in_reply_to_user_id,author_id,referenced_tweets,possibly_sensitive"
+                    // && strm.TweetFields == "attachments,conversation_id,in_reply_to_user_id,author_id,referenced_tweets,possibly_sensitive"
+                   && strm.TweetFields == "referenced_tweets,author_id"
+                   && strm.UserFields == "name,username"
                      && strm.Expansions== "author_id" //expanding on the author Id includes the basic user entity which has the username
                      select strm)
                     .StartAsync(async strm =>
                     {
                         await HandleStreamResponse(strm);
 
+                        if(strm.Content.Length > 5)
                         if (count++ >= 5)
                             cancelTokenSrc.Cancel();
                     });

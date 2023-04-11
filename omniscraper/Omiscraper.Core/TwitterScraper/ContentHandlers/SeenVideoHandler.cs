@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Omniscraper.Core.TwitterScraper.Entities.v2;
 
 namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
@@ -23,21 +24,21 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             settings = options.Value;
             this.twitterRepository = twitterRepository;
         }
-        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
+        public override async Task HandleAsync<T>(StreamedTweetContent notification, ILogger<T> logger)
         {
             TwitterVideo twitterVideo;
-            bool exists = scraperRepository.GetIfVideoExists(notification.IdOfTweetBeingRepliedTo.Value, out twitterVideo);
+            bool exists = scraperRepository.GetIfVideoExists(notification.TweetRepliedToId.Value, out twitterVideo);
             if (exists)
             {
-                logger.LogInformation($"This tweet existed {notification.IdOfTweetBeingRepliedTo.Value}.");
+                logger.LogInformation($"This tweet existed {notification.TweetRepliedToId.Value}.");
 
-                var request = new TwitterVideoRequest(notification.IdOfRequestingTweet, twitterVideo.Id, notification.RequestedBy);
+                var request = new TwitterVideoRequest(notification.RequestingTweetId, twitterVideo.Id, notification.RequestedBy);
 
                 await scraperRepository.CaptureTwitterRequestAsync(request);
 
                 string response = twitterVideo.GetResponseContent(settings.BaseUrl, request.RequestedBy);
                 //send back response
-                await twitterRepository.ReplyToTweetAsync(notification.IdOfRequestingTweet, response);
+                await twitterRepository.ReplyToTweetAsync(notification.RequestingTweetId, response);
                 return;
             }
             else

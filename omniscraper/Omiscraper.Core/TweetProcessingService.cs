@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using Omniscraper.Core.TwitterScraper.ContentHandlers;
+using Omniscraper.Core.TwitterScraper.Entities.v2;
 
 namespace Omniscraper.Core
 {
@@ -26,22 +27,21 @@ namespace Omniscraper.Core
             this.handlerFactory = handlerFactory;
         }
 
-        public async Task ProcessTweetAsync(string tweetJsonString)
+        public async Task ProcessTweetAsync(string v2tweetJsonString)
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             //deserialize tweet.
-            RawTweet requestingTweet = DeserializeTweet(tweetJsonString);
+            StreamedTweetContent streamedContent = DeserializeTweet(v2tweetJsonString);
 
             ITweetContentHandler handler = handlerFactory.BuildHandlerPipeline();
-            var requestNotification = requestingTweet.CreateRequestNotification();
 
-            await handler.HandleAsync(requestNotification, logger);
+            await handler.HandleAsync(streamedContent, logger);
         }       
 
-        private RawTweet DeserializeTweet(string tweetJsonString)
+        private StreamedTweetContent DeserializeTweet(string tweetJsonString)
         {
-            var tweet = JsonConvert.DeserializeObject<RawTweet>(tweetJsonString);
+            var tweet = JsonConvert.DeserializeObject<StreamedTweetContent>(tweetJsonString);
 
             return tweet;
         }
