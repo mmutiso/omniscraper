@@ -64,6 +64,7 @@ namespace Omniscraper.Daemon
             services.AddLogging();
             services.AddApplicationInsightsTelemetryWorkerService();
             services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) => { module.EnableSqlCommandTextInstrumentation = true; });
+            services.Configure<TweetProcessorSettings>(context.Configuration.GetSection("TweetProcessorSettings"));
 
             SecretClientOptions secretClientOptions = new SecretClientOptions
             {
@@ -84,15 +85,25 @@ namespace Omniscraper.Daemon
 
             services.AddSingleton<ILoadApplicationKeys, AzureKeyVaultKeysLoader>();
 
-            TwitterKeys keys = services.BuildServiceProvider()
-                    .GetRequiredService<ILoadApplicationKeys>()
+            var kvClient = services.BuildServiceProvider()
+                    .GetRequiredService<ILoadApplicationKeys>();
+            TwitterKeys keys = kvClient
                     .LoadTwitterKeys();
 
+            string videosApiBaseUrl = kvClient.LoadByKeyName(context.Configuration["TweetProcessorSettings:VideoApiBaseUrlKeyVaultName"]);
+
+            
+            services.AddHttpClient(context.Configuration["TweetProcessorSettings:VideoApiHttpClientName"], opt =>
+            {
+                opt.BaseAddress = new Uri(videosApiBaseUrl);
+            });
+
+            services.AddSingleton<VideosApiWrapper>();
             services.AddSingleton(keys);
             services.AddSingleton<OmniScraperContext>();
             services.AddSingleton<ITwitterRepository, LinqToTwitterRepository>();
             services.AddSingleton<TweetProcessingService>();
-            services.Configure<TweetProcessorSettings>(context.Configuration.GetSection("TweetProcessorSettings"));
+            
             services.AddDbContextFactory<OmniscraperDbContext>(options =>
             {
                 string connectionStringKeyName = "dev-postres-connection-string";

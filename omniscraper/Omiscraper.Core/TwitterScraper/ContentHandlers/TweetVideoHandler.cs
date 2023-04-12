@@ -17,13 +17,15 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
         IScraperRepository scraperRepository;
         ITwitterRepository twitterRepository;
         TweetProcessorSettings settings;
+        VideosApiWrapper videosApiWrapper;
 
-        public TweetVideoHandler(IScraperRepository repository, 
+        public TweetVideoHandler(IScraperRepository repository, VideosApiWrapper videosApiWrapper,
             ITwitterRepository twitterRepository,  IOptions<TweetProcessorSettings> settings)
         {
             scraperRepository = repository;
             this.twitterRepository = twitterRepository;
             this.settings = settings.Value;
+            this.videosApiWrapper = videosApiWrapper;
         }
 
         public override async Task HandleAsync<T>(StreamedTweetContent streamedContent, ILogger<T> logger)
@@ -31,19 +33,19 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             // replace all this implementation to use the video api. 
             // update video api to provide all other data needed
 
-            VideoResponseModel videoResponseModel = default;
+            VideoResponseModel videoResponseModel = await videosApiWrapper.GetVideoAsync(streamedContent.TweetRepliedToId.ToString());
 
             if (videoResponseModel.FoundVideo)
             {
                
                 var request = streamedContent.GenerateVideoRequest();
-                var video = TwitterVideo.Create(request.Id, videoResponseModel, streamedContent.TweetRepliedToId.Value);
+                var video = TwitterVideo.Create(request.Id, videoResponseModel, streamedContent.TweetRepliedToId);
 
                 await scraperRepository.CaptureTwitterVideoAndRequestAsync(request, video);
 
                 string response = video.GetResponseContent(settings.BaseUrl, request.RequestedBy);
                 //send back response
-                await twitterRepository.ReplyToTweetAsync(request.RequestingTweetId.ToString(), response);
+                //await twitterRepository.ReplyToTweetAsync(request.RequestingTweetId.ToString(), response);
                 logger.LogInformation($"Sent back this response -> {response}");
             }
             else

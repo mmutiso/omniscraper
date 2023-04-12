@@ -27,10 +27,10 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
         public override async Task HandleAsync<T>(StreamedTweetContent notification, ILogger<T> logger)
         {
             TwitterVideo twitterVideo;
-            bool exists = scraperRepository.GetIfVideoExists(notification.TweetRepliedToId.Value, out twitterVideo);
+            bool exists = scraperRepository.GetIfVideoExists(notification.TweetRepliedToId, out twitterVideo);
             if (exists)
             {
-                logger.LogInformation($"This tweet existed {notification.TweetRepliedToId.Value}.");
+                logger.LogInformation($"This tweet existed {notification.TweetRepliedToId}.");
 
                 var request = new TwitterVideoRequest(notification.RequestingTweetId, twitterVideo.Id, notification.RequestedBy);
 

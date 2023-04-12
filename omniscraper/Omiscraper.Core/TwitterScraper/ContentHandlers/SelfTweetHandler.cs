@@ -23,11 +23,11 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
         {
             await Task.CompletedTask;
 
-            if (notification.RequestedBy.Equals(settings.StreamListeningKeywords, StringComparison.OrdinalIgnoreCase))
-            {
-                logger.LogInformation("This is my tweet. Ignoring");
-                return;
-            }
+            //if (notification.RequestedBy.Equals(settings.StreamListeningKeywords, StringComparison.OrdinalIgnoreCase))
+            //{
+            //    logger.LogInformation("This is my tweet. Ignoring");
+            //    return;
+            //}
             {
                 await base.HandleAsync(notification, logger);
             }

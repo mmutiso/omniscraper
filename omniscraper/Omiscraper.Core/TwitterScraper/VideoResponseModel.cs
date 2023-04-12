@@ -9,13 +9,18 @@
         public string TwitterPlatformThumbnailLink { get; set; }
         public bool PotentiallySensitive { get; set; }
 
+        public VideoResponseModel()
+        {
+        }
 
-        public VideoResponseModel(long? tweetId, string videoLink, bool found = true, bool sensitive = false)
+        public VideoResponseModel(long? tweetId, string videoLink, string thumbnailLink, string text, bool found = true, bool sensitive = false)
         {
             TweetId = tweetId;
             TwitterPlatformVideoLink = videoLink;
             FoundVideo = found;
             PotentiallySensitive = sensitive;
+            TwitterPlatformThumbnailLink = thumbnailLink;
+            tweetText = text;
         }
     }
 }

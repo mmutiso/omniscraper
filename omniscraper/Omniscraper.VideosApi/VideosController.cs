@@ -21,23 +21,24 @@ namespace Omniscraper.VideosApi
         public async Task<IActionResult> Index(long? tweetId)
         {
             if(!tweetId.HasValue)
-                return BadRequest(new VideoResponseModel(tweetId, string.Empty, false));
+                return BadRequest(new VideoResponseModel(tweetId,string.Empty, string.Empty, string.Empty, false));
 
             try
             {
                 RawTweet videoTweet = await _twitterRepository.FindByIdAsync(tweetId.Value);
-                TweetNotification tweetNotification = new TweetNotification(videoTweet, default, default);
+                TweetNotification tweetNotification = new TweetNotification(videoTweet, default, String.Empty);
 
+                if(tweetNotification?.TweetWithVideo?.extended_tweet != null)
                 if (tweetNotification.HasVideo())
                 {
                     var video = tweetNotification.GetVideo();
-                    return Ok(new VideoResponseModel(tweetId, video.Url));
+                    return Ok(new VideoResponseModel(tweetId, video.Url, video.VideoThumbnailLinkHttps, video.Text));
                 }
-                return Ok(new VideoResponseModel(tweetId, "No video was found", false));
+                return Ok(new VideoResponseModel(tweetId, string.Empty, string.Empty, "no video was found", false));
             }
             catch (Exception ex)
             {
-                return Ok(new VideoResponseModel(tweetId, ex.Message, false));
+                return Ok(new VideoResponseModel(tweetId, string.Empty, string.Empty, ex.Message, false));
             }
         }
     }

@@ -26,22 +26,25 @@ namespace Omniscraper.Core.TwitterScraper.Entities.v2
             return data.text;
         }
 
-        public long? TweetRepliedToId => GetTweetBeingRepliedTo();
+        public long TweetRepliedToId => GetTweetBeingRepliedTo();
         public long RequestingTweetId => long.Parse(data.id);
 
-        long? GetTweetBeingRepliedTo() 
+        long GetTweetBeingRepliedTo() 
         {
+            if (data.referenced_tweets is null)
+                return -1;
+
             var tweet = data.referenced_tweets.Where(x => x.type == "replied_to").FirstOrDefault();
             long tweetId ;
             if (tweet is null)
-                return null;
+                return -1;
 
             bool valid = long.TryParse(tweet.id, out tweetId);
 
             if (valid)
                 return tweetId;
             else
-                return null;
+                return -1;
         }
 
         public string RequestedBy => GetAuthorUsername();
@@ -59,7 +62,7 @@ namespace Omniscraper.Core.TwitterScraper.Entities.v2
         public string author_id { get; set; }
         public List<string> edit_history_tweet_ids { get; set; }
         public string id { get; set; }
-        public List<ReferencedTweet> referenced_tweets { get; set; }
+        public List<ReferencedTweet>? referenced_tweets { get; set; }
         public string text { get; set; }
     }
 

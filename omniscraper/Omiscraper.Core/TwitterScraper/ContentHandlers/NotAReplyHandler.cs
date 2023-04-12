@@ -15,7 +15,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
         {
             await Task.CompletedTask;
 
-            if (!notification.TweetRepliedToId.HasValue) // this tweet is not in response to any tweet
+            if (notification.TweetRepliedToId==-1) // this tweet is not in response to any tweet
             {
                 if (logger.IsEnabled(LogLevel.Warning))
                 {

@@ -12,6 +12,8 @@ omniscraper/Omniscraper.VideosApi/Properties/launchSettings.json
 omniscraper/Omniscraper.Api/Properties/
 omniscraper/Omniscraper.VideosApi/Properties/
 omniscraper/Omniscraper.VideosApi/.config/
+
+Omiscraper.Core/PackagesWithLTT5.1.3/
 #sqlite
 
 *.db
