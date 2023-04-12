@@ -13,9 +13,8 @@ namespace Omniscraper.Core.TwitterScraper.Entities.v2
         public Includes includes { get; set; }
         public List<MatchingRule> matching_rules { get; set; }
 
-        public TwitterVideoRequest GenerateVideoRequest()
+        public TwitterVideoRequest GenerateVideoRequest(Guid videoId)
         {
-            Guid videoId = Guid.NewGuid();
             var request = new TwitterVideoRequest(long.Parse(data.id), videoId, GetAuthorUsername());
 
             return request;

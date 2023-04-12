@@ -37,15 +37,15 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 
             if (videoResponseModel.FoundVideo)
             {
-               
-                var request = streamedContent.GenerateVideoRequest();
-                var video = TwitterVideo.Create(request.Id, videoResponseModel, streamedContent.TweetRepliedToId);
+
+                var video = TwitterVideo.Create(videoResponseModel, streamedContent.TweetRepliedToId);
+                var request = streamedContent.GenerateVideoRequest(video.Id);
 
                 await scraperRepository.CaptureTwitterVideoAndRequestAsync(request, video);
 
                 string response = video.GetResponseContent(settings.BaseUrl, request.RequestedBy);
                 //send back response
-                //await twitterRepository.ReplyToTweetAsync(request.RequestingTweetId.ToString(), response);
+                await twitterRepository.ReplyToTweetAsync(request.RequestingTweetId.ToString(), response);
                 logger.LogInformation($"Sent back this response -> {response}");
             }
             else

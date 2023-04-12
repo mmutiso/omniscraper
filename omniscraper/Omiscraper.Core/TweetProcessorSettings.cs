@@ -11,5 +11,6 @@ namespace Omniscraper.Core
         public string BaseUrl { get; set; }       
         public string VideoApiBaseUrlKeyVaultName { get; set; }
         public string VideoApiHttpClientName { get; set; }
+        public string StreamListeningKeywords = "omniscraper";
     }
 }

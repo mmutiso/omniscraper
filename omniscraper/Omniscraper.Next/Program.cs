@@ -21,10 +21,10 @@ namespace Omniscraper.Next
             await authorizer.AuthorizeAsync();
             var context = new TwitterContext(authorizer);
 
-          //  await DeleteRulesAsync(context);
-           //  await AddRulesAsync(context);
+           await DeleteRulesAsync(context);
+             await AddRulesAsync(context);
             //await ValidateRulesAsync(context);
-            await DoFilterStreamAsync(context);
+           // await DoFilterStreamAsync(context);
             //await SingleTweetLookUpAsync(context);
             //await DoSearchAsync(context);
 
@@ -59,7 +59,7 @@ namespace Omniscraper.Next
         {
             var rules = new List<StreamingAddRule>
             {
-                new StreamingAddRule { Tag = "Match exact phrase Mombasa", Value = "(\"Mombasa\") -\"filtered stream\"" }, //add is reply rule
+                new StreamingAddRule { Tag = "Match omniscraper and @omniscraper mention, only as a reply", Value = "(\"omniscraper\" OR @omniscraper) -\"filtered stream\"" }, //add is reply rule
             };
 
             Streaming? result = await twitterCtx.AddStreamingFilterRulesAsync(rules);
@@ -168,7 +168,7 @@ namespace Omniscraper.Next
         {
             var ruleIds = new List<string>
             {
-                "1645352726224834560"
+                "1646091826628296704"
             };
 
             Streaming? result = await twitterCtx.DeleteStreamingFilterRulesAsync(ruleIds);

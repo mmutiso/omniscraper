@@ -28,7 +28,7 @@ namespace Omniscraper.VideosApi
                 RawTweet videoTweet = await _twitterRepository.FindByIdAsync(tweetId.Value);
                 TweetNotification tweetNotification = new TweetNotification(videoTweet, default, String.Empty);
 
-                if(tweetNotification?.TweetWithVideo?.extended_tweet != null)
+                if(tweetNotification?.TweetWithVideo?.ExtendedEntities != null)
                 if (tweetNotification.HasVideo())
                 {
                     var video = tweetNotification.GetVideo();

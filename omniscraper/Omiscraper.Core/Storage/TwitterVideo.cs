@@ -38,8 +38,9 @@ namespace Omniscraper.Core.Storage
             Text = tweetText;
         }
 
-        public static TwitterVideo Create(Guid id, VideoResponseModel model, long parentTweetId)
+        public static TwitterVideo Create(VideoResponseModel model, long parentTweetId)
         {
+            Guid id = Guid.NewGuid();
             TwitterVideo twitterVideo = new TwitterVideo(id, model.TwitterPlatformVideoLink,parentTweetId, model.TwitterPlatformThumbnailLink, model.tweetText );
 
             return twitterVideo;

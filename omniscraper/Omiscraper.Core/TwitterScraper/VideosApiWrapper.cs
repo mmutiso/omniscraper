@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,12 @@ namespace Omniscraper.Core.TwitterScraper
     {
         private readonly TweetProcessorSettings _settings;
         private readonly IHttpClientFactory _httpClientFactory;
-        public VideosApiWrapper(IHttpClientFactory httpClientFactory, IOptions<TweetProcessorSettings> settings)
+        ILogger<VideosApiWrapper> _logger;
+        public VideosApiWrapper(IHttpClientFactory httpClientFactory, IOptions<TweetProcessorSettings> settings, ILogger<VideosApiWrapper> logger)
         {
             _httpClientFactory = httpClientFactory;
             _settings = settings.Value;
+            _logger = logger;  
         }
 
         public async Task<VideoResponseModel> GetVideoAsync(string tweetId)
@@ -32,6 +35,9 @@ namespace Omniscraper.Core.TwitterScraper
                 PropertyNameCaseInsensitive = true,
                 
             };
+
+            _logger.LogInformation(responseString);
+
             var videoObj = JsonSerializer.Deserialize<VideoResponseModel>(responseString, options);
 
             return videoObj;

@@ -71,7 +71,6 @@ namespace Omniscraper.Daemon
                 Task[] tasks = new[] { streamTask };
 
                 await Task.WhenAny(tasks);
-                var exception = (Exception)tasks[0].Exception.InnerException;
             }
         }
     }
