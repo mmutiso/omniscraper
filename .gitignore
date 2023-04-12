@@ -13,7 +13,7 @@ omniscraper/Omniscraper.Api/Properties/
 omniscraper/Omniscraper.VideosApi/Properties/
 omniscraper/Omniscraper.VideosApi/.config/
 
-Omiscraper.Core/PackagesWithLTT5.1.3/
+omniscraper/Omiscraper.Core/PackagesWithLTT5.1.3/
 #sqlite
 
 *.db
