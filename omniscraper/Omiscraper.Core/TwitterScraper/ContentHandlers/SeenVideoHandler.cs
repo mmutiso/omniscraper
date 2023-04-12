@@ -38,7 +38,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 
                 string response = twitterVideo.GetResponseContent(settings.BaseUrl, request.RequestedBy);
                 //send back response
-                await twitterRepository.ReplyToTweetAsync(notification.RequestingTweetId, response);
+                await twitterRepository.ReplyToTweetAsync(notification.RequestingTweetId.ToString(), response);
                 return;
             }
             else

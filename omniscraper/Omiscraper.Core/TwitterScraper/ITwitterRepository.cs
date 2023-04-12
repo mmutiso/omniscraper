@@ -9,7 +9,7 @@ namespace Omniscraper.Core.TwitterScraper
 {
     public interface ITwitterRepository
     {
-        public Task<RawTweet> FindByIdAsync(long id);
-        public Task ReplyToTweetAsync(long idOftweetToReplyTo, string content);
+       // public Task<RawTweet> FindByIdAsync(long id);
+        public Task ReplyToTweetAsync(string idOftweetToReplyTo, string content);
      }
 }

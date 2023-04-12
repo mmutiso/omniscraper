@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Omniscraper.Core.TwitterScraper.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using Omniscraper.Core.TwitterScraper.ContentHandlers;
 using Omniscraper.Core.TwitterScraper.Entities.v2;
+using System.Text.Json;
 
 namespace Omniscraper.Core
 {
@@ -29,9 +29,6 @@ namespace Omniscraper.Core
 
         public async Task ProcessTweetAsync(string v2tweetJsonString)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            //deserialize tweet.
             StreamedTweetContent streamedContent = DeserializeTweet(v2tweetJsonString);
 
             ITweetContentHandler handler = handlerFactory.BuildHandlerPipeline();
@@ -41,7 +38,7 @@ namespace Omniscraper.Core
 
         private StreamedTweetContent DeserializeTweet(string tweetJsonString)
         {
-            var tweet = JsonConvert.DeserializeObject<StreamedTweetContent>(tweetJsonString);
+            var tweet = JsonSerializer.Deserialize<StreamedTweetContent>(tweetJsonString);
 
             return tweet;
         }
