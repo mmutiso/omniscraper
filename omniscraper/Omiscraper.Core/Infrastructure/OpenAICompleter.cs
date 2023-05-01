@@ -3,14 +3,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Azure.Security.KeyVault.Secrets;
 using LinqToTwitter;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Omniscraper.Core.TwitterScraper;
 using Omniscraper.Core.TwitterScraper.Entities;
 
 namespace Omniscraper.Core.Infrastructure
@@ -20,55 +20,50 @@ namespace Omniscraper.Core.Infrastructure
 		IConfiguration configuration;
 		ILogger<OpenAICompleter> logger;
         SecretClient secretsClient;
-		//IHttpClientFactory httpClientFactory;
+		IHttpClientFactory httpClientFactory;
+        private readonly TweetProcessorSettings _settings;
+        OpenAISettings openAISettings;
 
-		public OpenAICompleter(IConfiguration configuration, ILogger<OpenAICompleter> logger, SecretClient secretsClient)
+        public OpenAICompleter(IConfiguration configuration,
+            ILogger<OpenAICompleter> logger,
+            SecretClient secretsClient,
+            IHttpClientFactory httpClientFactory,
+            TweetProcessorSettings settings,
+            OpenAISettings openAISettings)
 		{
 			this.configuration = configuration;
 			this.logger = logger;
 			this.secretsClient = secretsClient;
-			//this.httpClientFactory = httpClientFactory;
+			this.httpClientFactory = httpClientFactory;
+            _settings = settings;
+            this.openAISettings = openAISettings;
 		}
 
-		public async Task<string> GetOpenAIReponseAsync()
+		public async Task<string> GetOpenAICompletionAsync()
 		{
-            HttpClient httpClient = new HttpClient();
+            using var httpClient = httpClientFactory.CreateClient(_settings.OpenaiHttpClientName);
 
-			var key = "OpenaiRequest";
-            var openAIRequest = "{\n    \"model\": \"text-davinci-003\",\n    \"prompt\": \"Question: Tell me a fun fact that I can share with my friends? \\nAnswer:\",\n    \"temperature\": 0.5,\n    \"max_tokens\": 50\n  }";
+            var requestBody = openAISettings.Prompt;
 
-            //var openaiRequest = Environment.GetEnvironmentVariable(key);
+            var data = new StringContent(requestBody, Encoding.UTF8, "application/json");
 
-            //if (string.IsNullOrWhiteSpace(""))
-            //{
-            //	Console.WriteLine($"The item with the key {key} does not exist!");
-            //	return string.Empty;
-            //}
-
-            string openaiKey = configuration.GetSection("KeyVault:OpenAIKey").Value;
-            KeyVaultSecret keyVaultSecret = secretsClient.GetSecret(openaiKey);
-
-			if (keyVaultSecret is null)
-				return string.Empty;
-
-			httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{keyVaultSecret.Value}");
-
-            var data = new StringContent(openAIRequest, Encoding.UTF8, "application/json");
-
-            var message = await httpClient.PostAsync("https://api.openai.com/v1/completions", data);
+            var message = await httpClient.PostAsync("completions", data);
 
 			if(message.IsSuccessStatusCode)
 			{
                 var response = await message.Content.ReadAsStringAsync();
+                
+				var deserializedRes = JsonSerializer.Deserialize<OpenAIResponse>(response);
 
-				var choice = JsonConvert.DeserializeObject<OpenAIResponse>(response).Choices.First();
+                if(deserializedRes?.Choices.Count > 0)
+                {
+                    var choice = deserializedRes.Choices[0];
 
-				if(choice.Finish_Reason != "stop")
-				{
-                    return string.Empty;
+                    if (choice.Finish_Reason == "stop")
+                    {
+                        return choice.Text.Trim();
+                    }
                 }
-
-				return $"FUN FACT: {choice.Text.Trim()}";
             }
 
             return string.Empty;

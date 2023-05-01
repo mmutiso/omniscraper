@@ -128,12 +128,24 @@ namespace Omniscraper.Daemon
             services.AddHostedService<TweetListeningBackgroundService>();
             services.AddSingleton<TwitterContentHandlerFactory>();
             services.AddSingleton<OpenAICompleter>();
-            services.AddHttpClient("OpenaiClient", config =>
+
+            string openAIApiKey = kvClient.LoadByKeyName(context.Configuration["KeyVault:OpenAIKeyName"]);
+
+            string openAIPrompt = kvClient.LoadByKeyName(context.Configuration["KeyVault:OpenAISettingsKeyName"]);
+
+            services.AddSingleton<OpenAISettings>((cfg) => {
+                return new OpenAISettings()
+                {
+                    Prompt = openAIPrompt
+                };
+                });
+
+            services.AddHttpClient(context.Configuration["TweetProcessorSettings:OpenaiHttpClientName"], config =>
             {
                 config.BaseAddress = new Uri("https://api.openai.com/v1/");
                 config.Timeout = new TimeSpan(0, 0, 30);
                 config.DefaultRequestHeaders.Clear();
-                config.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
+                config.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAIApiKey);
             });
         }
     }

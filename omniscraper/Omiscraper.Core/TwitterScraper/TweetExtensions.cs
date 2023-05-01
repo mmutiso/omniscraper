@@ -25,10 +25,29 @@ namespace Omniscraper.Core.TwitterScraper
             return links;
         }
 
-        public static string GetResponseContent(this TwitterVideo video, string baseUrl, string requestor, string choice)
+        /// <summary>
+        /// This is an extension method in C# that extends the TwitterVideo class with a method named GetResponseContent(). The method takes three parameters:
+        /// baseUrl: a string representing the base URL for the video.
+        /// requestor: a string representing the username of the Twitter user who requested the video.
+        /// completionResponse: a string representing the response message to the user after the video has been processed.
+        /// </summary>
+        /// <param name="video"></param>
+        /// <param name="baseUrl"></param>
+        /// <param name="requestor"></param>
+        /// <param name="completionResponse"></param>
+        /// <returns></returns>
+        public static string GetResponseContent(this TwitterVideo video, string baseUrl, string requestor, string completionResponse)
         {
             string linkUrl = $"{baseUrl}/{video.Slug}";
-            string content = $"@{requestor} Here you go {linkUrl}\n{choice}";
+            string content = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(completionResponse))
+            {
+                content = $"Hey @{requestor}, here is the video you requested {linkUrl}";
+                return content;
+            }
+
+            content = $"{completionResponse}\n{linkUrl}";
             return content;
         }
 

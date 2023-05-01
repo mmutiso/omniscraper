@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Omniscraper.Core.TwitterScraper.Entities.v2;
+using Omniscraper.Core.Infrastructure;
 
 namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
@@ -38,7 +39,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 
                 await scraperRepository.CaptureTwitterRequestAsync(request);
 
-                var choice = await openAICompleter.GetOpenAIReponseAsync();
+                var choice = await openAICompleter.GetOpenAICompletionAsync();
 
                 string response = twitterVideo.GetResponseContent(settings.BaseUrl, request.RequestedBy, choice);
                 //send back response
