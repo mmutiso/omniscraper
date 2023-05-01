@@ -16,10 +16,10 @@ namespace Omniscraper.Core.Storage
     {
         public Guid Id { get; set; }
         public string Slug { get; set; }
-        public string TwitterHandle { get; set; }
+        public string TwitterHandle { get; set; } = "";
         public DateTime DateRequested { get; set; }
-        public DateTime DateOfAction { get; set; }
+        public DateTime? DateOfAction { get; set; } = null;
         public string FlaggingReason { get; set; }
-        public RequestStatus RequestStatus { get; set; }
+        public RequestStatus RequestStatus { get; set; } = RequestStatus.Pending;
     }
 }

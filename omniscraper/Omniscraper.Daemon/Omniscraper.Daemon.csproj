@@ -21,6 +21,9 @@
     <ProjectReference Include="..\Omiscraper.Core\Omiscraper.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Microsoft.Extensions.Http" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

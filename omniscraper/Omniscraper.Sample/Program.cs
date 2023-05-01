@@ -12,6 +12,8 @@ using Omniscraper.Core;
 using System.Diagnostics;
 using Omniscraper.Core.Storage;
 using Microsoft.Extensions.Logging;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.Configuration;
 
 namespace Omniscraper.Sample
 {
@@ -26,6 +28,10 @@ namespace Omniscraper.Sample
 
         }
 
+            var res = await new OpenAICompleter().GetOpenAIReponseAsync();
+
+            Console.WriteLine("Sample project running...");
+        }
 
         static async Task<IAuthorizer> AuthSampleAsync()
         {
