@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Omniscraper.Core.TwitterScraper.Entities.v2;
 
 namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
@@ -18,7 +19,7 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
             settings = options.Value;
         }
 
-        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
+        public override async Task HandleAsync<T>(StreamedTweetContent notification, ILogger<T> logger)
         {
             await Task.CompletedTask;
 

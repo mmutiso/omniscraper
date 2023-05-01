@@ -8,6 +8,7 @@ using System.Threading;
 using System.Linq;
 using System.IO;
 using LinqToTwitter.Common;
+using Microsoft.Extensions.Logging;
 
 namespace Omniscraper.Next
 {
@@ -15,25 +16,50 @@ namespace Omniscraper.Next
     {
         static async Task Main(string[] args)
         {
-            var authorizer = await AuthSampleAsync();
+           
+            var authorizer = await AuthSampleAppOnlyAsync();
             await authorizer.AuthorizeAsync();
             var context = new TwitterContext(authorizer);
 
-            //await DeleteRulesAsync(context);
-            // await AddRulesAsync(context);
+           await DeleteRulesAsync(context);
+             await AddRulesAsync(context);
             //await ValidateRulesAsync(context);
-            //await DoFilterStreamAsync(context);
+           // await DoFilterStreamAsync(context);
             //await SingleTweetLookUpAsync(context);
-            await DoSearchAsync(context);
+            //await DoSearchAsync(context);
+
+            //await TweetAsync();
 
             Console.WriteLine("DONE TESTING");
+        }
+
+        static async Task TweetAsync()
+        {
+            string tweetText = "";
+
+            var authorizer = await AuthSampleImpersonateAsync();
+            await authorizer.AuthorizeAsync();
+            var context = new TwitterContext(authorizer);
+
+            if (string.IsNullOrEmpty(tweetText))
+                throw new InvalidOperationException("No tweet text. Omni exception");
+
+            Tweet? tweet = await context.TweetAsync(tweetText);
+
+            if (tweet != null)
+                Console.WriteLine(
+                    "Tweet returned: " +
+                    "(" + tweet.ID + ") " +
+                    tweet.Text + "\n");
+            else
+                Console.WriteLine("Tweet was null");
         }
 
         static async Task AddRulesAsync(TwitterContext twitterCtx)
         {
             var rules = new List<StreamingAddRule>
             {
-                new StreamingAddRule { Tag = "some things", Value = "Katumbiti" },
+                new StreamingAddRule { Tag = "Match omniscraper and @omniscraper mention, only as a reply", Value = "(\"omniscraper\" OR @omniscraper) -\"filtered stream\"" }, //add is reply rule
             };
 
             Streaming? result = await twitterCtx.AddStreamingFilterRulesAsync(rules);
@@ -114,7 +140,7 @@ namespace Omniscraper.Next
 
         static async Task DoSearchAsync(TwitterContext twitterCtx)
         {
-            string searchTerm = "conversation_id:1368919791847800838";
+            string searchTerm = "conversation_id:1639373566885122048";
 
             TwitterSearch? searchResponse =
                 await
@@ -122,7 +148,7 @@ namespace Omniscraper.Next
                  where search.Type == SearchType.RecentSearch &&
                        search.Query == searchTerm &&
                        search.MaxResults == 100 &&
-                       search.TweetFields == "attachments,conversation_id,in_reply_to_user_id,author_id,referenced_tweets" &&
+                       search.TweetFields == "attachments,conversation_id,in_reply_to_user_id,author_id,referenced_tweets,possibly_sensitive" &&
                        search.Expansions == "author_id,referenced_tweets.id,referenced_tweets.id.author_id"
 
                  select search)
@@ -142,9 +168,7 @@ namespace Omniscraper.Next
         {
             var ruleIds = new List<string>
             {
-                "1367859000629411840",
-                "1367855205170221057",
-                "1367855205170221058"
+                "1646091826628296704"
             };
 
             Streaming? result = await twitterCtx.DeleteStreamingFilterRulesAsync(ruleIds);
@@ -181,13 +205,16 @@ namespace Omniscraper.Next
                     (from strm in twitterCtx.Streaming
                                             .WithCancellation(cancelTokenSrc.Token)
                      where strm.Type == StreamingType.Filter
-                     && strm.TweetFields == "conversation_id,in_reply_to_user_id,author_id"
+                    // && strm.TweetFields == "attachments,conversation_id,in_reply_to_user_id,author_id,referenced_tweets,possibly_sensitive"
+                   && strm.TweetFields == "referenced_tweets,author_id"
+                   && strm.UserFields == "name,username"
                      && strm.Expansions== "author_id" //expanding on the author Id includes the basic user entity which has the username
                      select strm)
                     .StartAsync(async strm =>
                     {
                         await HandleStreamResponse(strm);
 
+                        if(strm.Content.Length > 5)
                         if (count++ >= 5)
                             cancelTokenSrc.Cancel();
                     });
@@ -202,9 +229,10 @@ namespace Omniscraper.Next
                 // app from being blocked.
                 Console.WriteLine(ex.ToString());
             }
-            catch (OperationCanceledException)
+            catch (Exception ex)
             {
                 Console.WriteLine("Stream cancelled.");
+                Console.WriteLine(ex.ToString());
             }
         }
 
@@ -261,7 +289,7 @@ namespace Omniscraper.Next
                         $"\nType:  {error.Type}"));
         }             
 
-        static async Task<IAuthorizer> AuthSampleAsync()
+        static async Task<IAuthorizer> AuthSampleAppOnlyAsync()
         {
             var keys = await GetKeysAsync();
 
@@ -270,7 +298,25 @@ namespace Omniscraper.Next
                 CredentialStore = new  InMemoryCredentialStore
                 {
                     ConsumerKey = keys.ConsumerKey,
-                    ConsumerSecret = keys.ConsumerSecret
+                    ConsumerSecret = keys.ConsumerSecret,
+                     
+                }
+            };
+            return auth;
+        }
+
+        static async Task<IAuthorizer> AuthSampleImpersonateAsync()
+        {
+            var keys = await GetKeysAsync();
+
+            var auth = new SingleUserAuthorizer
+            {
+                CredentialStore = new SingleUserInMemoryCredentialStore
+                {
+                    ConsumerKey = keys.ConsumerKey,
+                    ConsumerSecret = keys.ConsumerSecret,
+                    AccessToken = keys.AccessToken,
+                    AccessTokenSecret = keys.AccessTokenSecret
                 }
             };
             return auth;
@@ -280,7 +326,13 @@ namespace Omniscraper.Next
         {
             await Task.CompletedTask;
 
-            ILoadApplicationKeys credentialsLoader = new EnvironmentVariablesKeysLoader(default);
+            var factory = LoggerFactory.Create(LogDefineOptions =>
+            {
+
+            });
+            ILogger<EnvironmentVariablesKeysLoader> logger = factory.CreateLogger<EnvironmentVariablesKeysLoader>();
+
+            ILoadApplicationKeys credentialsLoader = new EnvironmentVariablesKeysLoader(logger);
             TwitterKeys keys = credentialsLoader.LoadTwitterKeys();
             return keys;
         }

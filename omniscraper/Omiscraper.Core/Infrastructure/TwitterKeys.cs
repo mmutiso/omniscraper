@@ -10,7 +10,13 @@ namespace Omniscraper.Core.Infrastructure
     {
         public string ConsumerKey { get; init; }
         public string ConsumerSecret { get; init; }
-        public string AccessToken { get; init; }
-        public string AccessTokenSecret { get; init; }
+        public string AccessToken { get; set; }
+        public string AccessTokenSecret { get; set; }
+
+        public void RemoveAccessTokenAndSecret()
+        {
+            AccessToken = string.Empty;
+            AccessTokenSecret = string.Empty;   
+        }
     }
 }

@@ -8,10 +8,9 @@ namespace Omniscraper.Core
 {
     public class TweetProcessorSettings
     {
-        public string BaseUrl { get; set; }
-        /// <summary>
-        /// Comma separated list of keywords to listen to
-        /// </summary>
-        public string StreamListeningKeywords { get; set; }
+        public string BaseUrl { get; set; }       
+        public string VideoApiBaseUrlKeyVaultName { get; set; }
+        public string VideoApiHttpClientName { get; set; }
+        public string StreamListeningKeywords = "omniscraper";
     }
 }

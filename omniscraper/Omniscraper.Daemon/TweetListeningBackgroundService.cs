@@ -40,12 +40,9 @@ namespace Omniscraper.Daemon
             while (!stoppingToken.IsCancellationRequested)
             {
                 Console.WriteLine($"Cancellation token requested: {stoppingToken.IsCancellationRequested}");
-                List<string> keywords = new List<string>
-                    {
-                        settings.StreamListeningKeywords
-                    };
+               
 
-                IQueryable<Streaming> twitterStream = omniContext.CreateStream(keywords, stoppingToken);
+                IQueryable<Streaming> twitterStream = omniContext.CreateStream(stoppingToken);
                 logger.LogInformation("Passed stream creation");
                 Task streamTask = twitterStream.StartAsync((content) => Task.Factory.StartNew(async () =>
                 {

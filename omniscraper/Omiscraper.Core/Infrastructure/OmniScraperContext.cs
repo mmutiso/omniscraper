@@ -6,53 +6,71 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using LinqToTwitter;
+using LinqToTwitter.OAuth;
 using Microsoft.Extensions.Logging;
 
 namespace Omniscraper.Core.Infrastructure
 {
     public class OmniScraperContext
     {
-        TwitterContext context;
+        TwitterContext _appOnlycontext;
+        TwitterContext _userImpersonatingcontext;
         ILogger<OmniScraperContext> _logger;
 
         public OmniScraperContext(TwitterKeys keys, ILogger<OmniScraperContext> logger)
         {
-            context = new TwitterContext(ApplicationAuthorizer(keys));
+            _appOnlycontext = new TwitterContext(ApplicationOnlyAuthorizer(keys));
+            _userImpersonatingcontext = new TwitterContext(UserImpersonatingAuthorizer(keys));
             _logger = logger;
         }
 
-        public IQueryable<Streaming> CreateStream(List<string> keywordsToTrack, CancellationToken cancellationToken)
+        public  IQueryable<Streaming> CreateStream(CancellationToken cancellationToken)
         {
-            string keywords = string.Join(",", keywordsToTrack);
 
-            _logger.LogInformation("Stream keywords: {}", keywordsToTrack);
+            var streamDefinition = from strm in _appOnlycontext.Streaming
+                                        .WithCancellation(cancellationToken)
+                                   where strm.Type == StreamingType.Filter
+                                 && strm.TweetFields == "referenced_tweets,author_id"
+                                 && strm.UserFields == "name,username"
+                                   && strm.Expansions == "author_id" //expanding on the author Id includes the basic user entity which has the username
+                                   select strm;
 
-            var stream = from strm in context.Streaming
-                         .WithCancellation(cancellationToken)
-                         where strm.Type == StreamingType.Filter &&
-                         strm.Track == keywords
-                         select strm;
-
-            return stream;
+            return streamDefinition;
         }
 
-        public async Task<Status> GetTweetByIdAsync(long tweetId)
-        {
-            var tweetQuery = from tweet in context.Status
-                             .Where(tweet => tweet.Type == StatusType.Show)
-                             .Where(tweet => tweet.ID == (ulong)tweetId)
-                             .Where(tweet => tweet.TweetMode == TweetMode.Extended)
-                             select tweet;
+        //public async Task<Status> GetTweetByIdAsync(long tweetId)
+        //{
+        //    var tweetQuery = from tweet in context.Status
+        //                     .Where(tweet => tweet.Type == StatusType.Show)
+        //                     .Where(tweet => tweet.ID == (ulong)tweetId)
+        //                     .Where(tweet => tweet.TweetMode == TweetMode.Extended)
+        //                     select tweet;
 
-            return await tweetQuery.FirstOrDefaultAsync();
+        //    return await tweetQuery.FirstOrDefaultAsync();
+        //}
+
+        public async Task ReplyToTweetAsync(string parentTweetId, string content)
+        {
+            await _userImpersonatingcontext.ReplyAsync(content, parentTweetId);
         }
 
-        public async Task ReplyToTweetAsync(long parentTweetId, string content)
+        IAuthorizer ApplicationOnlyAuthorizer(TwitterKeys keys)
         {
-            await context.ReplyAsync((ulong)parentTweetId, content);
+            var auth = new ApplicationOnlyAuthorizer()
+            {
+                CredentialStore = new InMemoryCredentialStore
+                {
+                    ConsumerKey = keys.ConsumerKey,
+                    ConsumerSecret = keys.ConsumerSecret
+                },
+            };
+
+            auth.AuthorizeAsync().GetAwaiter().GetResult(); // find a better way to do this.
+
+            return auth;
         }
 
-        IAuthorizer ApplicationAuthorizer(TwitterKeys keys)
+        IAuthorizer UserImpersonatingAuthorizer(TwitterKeys keys)
         {
             var auth = new SingleUserAuthorizer()
             {
@@ -64,9 +82,10 @@ namespace Omniscraper.Core.Infrastructure
                     AccessTokenSecret = keys.AccessTokenSecret
                 },
             };
+
+            auth.AuthorizeAsync().GetAwaiter().GetResult(); // same here, find a better way to do this
+
             return auth;
         }
-
-
     }
 }

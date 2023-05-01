@@ -17,14 +17,16 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
         ITwitterRepository twitterRepository;
         IScraperRepository scraperDatabaseRepository;
         IOptions<TweetProcessorSettings> options;
-        OpenAICompleter openaiCompleter;
+        VideosApiWrapper videosApiWrapper;
 
         public TwitterContentHandlerFactory(ITwitterRepository twitterRepository, IScraperRepository scraperRepository, 
-            ILogger<TwitterContentHandlerFactory> logger, IOptions<TweetProcessorSettings> options, OpenAICompleter openaiCompleter)
+            VideosApiWrapper videoApiWrapper,
+            ILogger<TwitterContentHandlerFactory> logger, IOptions<TweetProcessorSettings> options)
         {
             this.logger = logger;
             this.twitterRepository = twitterRepository;
             scraperDatabaseRepository = scraperRepository;
+            this.videosApiWrapper = videoApiWrapper;
             this.options = options;
             this.openaiCompleter = openaiCompleter;
         }
@@ -33,8 +35,8 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
         {
             ITweetContentHandler selfTweetHandler = new SelfTweetHandler(options);
             ITweetContentHandler notAReplyHandler = new NotAReplyHandler();
-            ITweetContentHandler seenVideoHandler = new SeenVideoHandler(scraperDatabaseRepository, options, twitterRepository, openaiCompleter);
-            ITweetContentHandler videoHandler = new TweetVideoHandler(scraperDatabaseRepository, twitterRepository, options, openaiCompleter);
+            ITweetContentHandler seenVideoHandler = new SeenVideoHandler(scraperDatabaseRepository, options, twitterRepository);
+            ITweetContentHandler videoHandler = new TweetVideoHandler(scraperDatabaseRepository,videosApiWrapper, twitterRepository, options);
 
             selfTweetHandler
                 .SetNext(notAReplyHandler)

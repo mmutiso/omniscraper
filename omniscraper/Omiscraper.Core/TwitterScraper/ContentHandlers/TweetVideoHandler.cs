@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Omniscraper.Core.Infrastructure;
+using Omniscraper.Core.TwitterScraper.Entities.v2;
 
 namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
@@ -17,27 +17,29 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
         IScraperRepository scraperRepository;
         ITwitterRepository twitterRepository;
         TweetProcessorSettings settings;
-        OpenAICompleter openAICompleter;
+        VideosApiWrapper videosApiWrapper;
 
-        public TweetVideoHandler(IScraperRepository repository, 
-            ITwitterRepository twitterRepository,
-            IOptions<TweetProcessorSettings> settings, OpenAICompleter openAICompleter)
+        public TweetVideoHandler(IScraperRepository repository, VideosApiWrapper videosApiWrapper,
+            ITwitterRepository twitterRepository,  IOptions<TweetProcessorSettings> settings)
         {
             scraperRepository = repository;
             this.twitterRepository = twitterRepository;
             this.settings = settings.Value;
-            this.openAICompleter = openAICompleter;
+            this.videosApiWrapper = videosApiWrapper;
         }
 
-        public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
+        public override async Task HandleAsync<T>(StreamedTweetContent streamedContent, ILogger<T> logger)
         {
-            RawTweet videoTweet = await twitterRepository.FindByIdAsync(notification.IdOfTweetBeingRepliedTo.Value);
-            TweetNotification tweetNotification = new TweetNotification(videoTweet, notification.IdOfRequestingTweet, notification.RequestedBy);
+            // replace all this implementation to use the video api. 
+            // update video api to provide all other data needed
 
-            if (tweetNotification.HasVideo())
+            VideoResponseModel videoResponseModel = await videosApiWrapper.GetVideoAsync(streamedContent.TweetRepliedToId.ToString());
+
+            if (videoResponseModel.FoundVideo)
             {
-                var video = tweetNotification.GetVideo();
-                var request = tweetNotification.GetVideoRequest(video.Id);
+
+                var video = TwitterVideo.Create(videoResponseModel, streamedContent.TweetRepliedToId);
+                var request = streamedContent.GenerateVideoRequest(video.Id);
 
                 await scraperRepository.CaptureTwitterVideoAndRequestAsync(request, video);
 
@@ -46,13 +48,13 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
                 string response = video.GetResponseContent(settings.BaseUrl, request.RequestedBy, choice);
 
                 //send back response
-                await twitterRepository.ReplyToTweetAsync(request.RequestingTweetId, response);
+                await twitterRepository.ReplyToTweetAsync(request.RequestingTweetId.ToString(), response);
                 logger.LogInformation($"Sent back this response -> {response}");
             }
             else
             {
-                logger.LogWarning($"The tweet being responded to didn't have a video -> {tweetNotification.TweetWithVideo.id}");
-                await base.HandleAsync(notification, logger);
+                logger.LogWarning($"The tweet being responded to didn't have a video -> {streamedContent.TweetRepliedToId}");
+                await base.HandleAsync(streamedContent, logger);
             }            
         }
     }
