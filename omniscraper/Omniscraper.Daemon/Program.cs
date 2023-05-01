@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
-
 using Omniscraper.Core;
+using Microsoft.Extensions.Http;
 using Omniscraper.Core.Infrastructure;
 using Omniscraper.Core.Storage;
 using Omniscraper.Core.TwitterScraper;
@@ -17,6 +17,7 @@ using Azure.Core;
 using Azure.Identity;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DependencyCollector;
+using System.Net.Http.Headers;
 
 namespace Omniscraper.Daemon
 {
@@ -115,6 +116,14 @@ namespace Omniscraper.Daemon
 
             services.AddHostedService<TweetListeningBackgroundService>();
             services.AddSingleton<TwitterContentHandlerFactory>();
+            services.AddSingleton<OpenAICompleter>();
+            services.AddHttpClient("OpenaiClient", config =>
+            {
+                config.BaseAddress = new Uri("https://api.openai.com/v1/");
+                config.Timeout = new TimeSpan(0, 0, 30);
+                config.DefaultRequestHeaders.Clear();
+                config.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
+            });
         }
     }
 }

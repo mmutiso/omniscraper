@@ -25,10 +25,10 @@ namespace Omniscraper.Core.TwitterScraper
             return links;
         }
 
-        public static string GetResponseContent(this TwitterVideo video, string baseUrl, string requestor)
+        public static string GetResponseContent(this TwitterVideo video, string baseUrl, string requestor, string choice)
         {
             string linkUrl = $"{baseUrl}/{video.Slug}";
-            string content = $"@{requestor} Here you go {linkUrl}";
+            string content = $"@{requestor} Here you go {linkUrl}\n{choice}";
             return content;
         }
 

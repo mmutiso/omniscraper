@@ -13,9 +13,13 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
     <PackageReference Include="serilog.extensions.logging" Version="3.0.1" />
     <PackageReference Include="serilog.sinks.file" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Omiscraper.Core\Omiscraper.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Microsoft.Extensions.Http" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

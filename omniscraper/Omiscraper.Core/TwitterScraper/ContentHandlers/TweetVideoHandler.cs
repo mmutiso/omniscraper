@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using Omniscraper.Core.Infrastructure;
 
 namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 {
@@ -16,13 +17,16 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
         IScraperRepository scraperRepository;
         ITwitterRepository twitterRepository;
         TweetProcessorSettings settings;
+        OpenAICompleter openAICompleter;
 
         public TweetVideoHandler(IScraperRepository repository, 
-            ITwitterRepository twitterRepository,  IOptions<TweetProcessorSettings> settings)
+            ITwitterRepository twitterRepository,
+            IOptions<TweetProcessorSettings> settings, OpenAICompleter openAICompleter)
         {
             scraperRepository = repository;
             this.twitterRepository = twitterRepository;
             this.settings = settings.Value;
+            this.openAICompleter = openAICompleter;
         }
 
         public override async Task HandleAsync<T>(ContentRequestNotification notification, ILogger<T> logger)
@@ -37,7 +41,10 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
 
                 await scraperRepository.CaptureTwitterVideoAndRequestAsync(request, video);
 
-                string response = video.GetResponseContent(settings.BaseUrl, request.RequestedBy);
+                var choice = await openAICompleter.GetOpenAIReponseAsync();
+
+                string response = video.GetResponseContent(settings.BaseUrl, request.RequestedBy, choice);
+
                 //send back response
                 await twitterRepository.ReplyToTweetAsync(request.RequestingTweetId, response);
                 logger.LogInformation($"Sent back this response -> {response}");
