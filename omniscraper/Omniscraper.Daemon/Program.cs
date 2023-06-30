@@ -140,7 +140,7 @@ namespace Omniscraper.Daemon
                 };
                 });
 
-            services.AddHttpClient(context.Configuration["TweetProcessorSettings:OpenaiHttpClientName"], config =>
+            services.AddHttpClient(context.Configuration["TweetProcessorSettings:OpenAIHttpClientName"], config =>
             {
                 config.BaseAddress = new Uri("https://api.openai.com/v1/");
                 config.Timeout = new TimeSpan(0, 0, 30);

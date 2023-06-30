@@ -38,10 +38,18 @@ namespace Omniscraper.Core.TwitterScraper.ContentHandlers
                 var request = new TwitterVideoRequest(notification.RequestingTweetId, twitterVideo.Id, notification.RequestedBy);
 
                 await scraperRepository.CaptureTwitterRequestAsync(request);
+                string completionString = string.Empty;
 
-                var choice = await openAICompleter.GetOpenAICompletionAsync();
+                try
+                {
+                    completionString = await openAICompleter.GetOpenAICompletionAsync();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex.Message);
+                }               
 
-                string response = twitterVideo.GetResponseContent(settings.BaseUrl, request.RequestedBy, choice);
+                string response = twitterVideo.GetResponseContent(settings.BaseUrl, request.RequestedBy, completionString);
                 //send back response
                 await twitterRepository.ReplyToTweetAsync(notification.RequestingTweetId.ToString(), response);
                 return;

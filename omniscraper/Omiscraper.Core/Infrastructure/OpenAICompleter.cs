@@ -12,36 +12,32 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Omniscraper.Core.TwitterScraper;
 using Omniscraper.Core.TwitterScraper.Entities;
+using Microsoft.Extensions.Options;
 
 namespace Omniscraper.Core.Infrastructure
 {
 	public class OpenAICompleter
     {
-		IConfiguration configuration;
 		ILogger<OpenAICompleter> logger;
-        SecretClient secretsClient;
 		IHttpClientFactory httpClientFactory;
         private readonly TweetProcessorSettings _settings;
         OpenAISettings openAISettings;
 
-        public OpenAICompleter(IConfiguration configuration,
+        public OpenAICompleter(
             ILogger<OpenAICompleter> logger,
-            SecretClient secretsClient,
             IHttpClientFactory httpClientFactory,
-            TweetProcessorSettings settings,
+            IOptions<TweetProcessorSettings> settings,
             OpenAISettings openAISettings)
 		{
-			this.configuration = configuration;
 			this.logger = logger;
-			this.secretsClient = secretsClient;
 			this.httpClientFactory = httpClientFactory;
-            _settings = settings;
+            _settings = settings.Value;
             this.openAISettings = openAISettings;
 		}
 
 		public async Task<string> GetOpenAICompletionAsync()
 		{
-            using var httpClient = httpClientFactory.CreateClient(_settings.OpenaiHttpClientName);
+            using var httpClient = httpClientFactory.CreateClient(_settings.OpenAIHttpClientName);
 
             var requestBody = openAISettings.Prompt;
 
@@ -52,7 +48,9 @@ namespace Omniscraper.Core.Infrastructure
 			if(message.IsSuccessStatusCode)
 			{
                 var response = await message.Content.ReadAsStringAsync();
-                
+
+                logger.LogInformation(response);
+
 				var deserializedRes = JsonSerializer.Deserialize<OpenAIResponse>(response);
 
                 if(deserializedRes?.Choices.Count > 0)
